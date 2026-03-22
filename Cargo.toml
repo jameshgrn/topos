@@ -5,11 +5,12 @@ edition = "2024"
 authors = ["Jake Gearon <jake@gearon.dev>"]
 description = "A typed geospatial computation kernel with first-class spatial semantics"
 license = "Apache-2.0"
-repository = "https://github.com/jakegearon/topos"
+repository = "https://github.com/jameshgrn/topos"
 keywords = ["geospatial", "gis", "raster", "vector", "spatial"]
 categories = ["science::geo"]
 
 [dependencies]
+thiserror = "2.0.18"
 
 [lints.rust]
 unsafe_code = "forbid"
