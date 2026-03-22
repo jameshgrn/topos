@@ -72,10 +72,15 @@ impl AffineTransform {
     /// ]).unwrap();
     /// ```
     pub fn new(coeffs: [f64; 6]) -> Result<Self> {
+        if let Some(i) = coeffs.iter().position(|c| !c.is_finite()) {
+            return Err(ToposError::NonFinite {
+                reason: format!("coefficient c{i} is {}", coeffs[i]),
+            });
+        }
         let det = coeffs[1] * coeffs[5] - coeffs[2] * coeffs[4];
-        if det.abs() < f64::EPSILON {
+        if det == 0.0 {
             return Err(ToposError::DegenerateTransform {
-                reason: format!("determinant is {det} (effectively zero)"),
+                reason: "determinant is exactly zero".to_string(),
             });
         }
         Ok(Self { coeffs })
@@ -89,7 +94,12 @@ impl AffineTransform {
     /// # Errors
     ///
     /// Returns [`ToposError::DegenerateTransform`] if pixel width or height is zero.
-    pub fn north_up(origin_x: f64, origin_y: f64, pixel_width: f64, pixel_height: f64) -> Result<Self> {
+    pub fn north_up(
+        origin_x: f64,
+        origin_y: f64,
+        pixel_width: f64,
+        pixel_height: f64,
+    ) -> Result<Self> {
         Self::new([origin_x, pixel_width, 0.0, origin_y, 0.0, pixel_height])
     }
 
@@ -156,7 +166,7 @@ impl AffineTransform {
     /// Whether this transform has rotation (non-zero c2 or c4).
     #[must_use]
     pub fn is_rotated(&self) -> bool {
-        self.coeffs[2].abs() > f64::EPSILON || self.coeffs[4].abs() > f64::EPSILON
+        self.coeffs[2] != 0.0 || self.coeffs[4] != 0.0
     }
 }
 
@@ -229,5 +239,42 @@ mod tests {
         assert_eq!(t.origin_y(), 200.0);
         assert_eq!(t.pixel_width(), 10.0);
         assert_eq!(t.pixel_height(), -10.0);
+    }
+
+    #[test]
+    fn nan_coefficient_rejected() {
+        let result = AffineTransform::new([0.0, 1.0, 0.0, 0.0, 0.0, f64::NAN]);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn infinity_coefficient_rejected() {
+        let result = AffineTransform::new([0.0, f64::INFINITY, 0.0, 0.0, 0.0, -1.0]);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn world_to_pixel_known_values() {
+        let t = simple_transform();
+        // World (120, 190): col = (120-100)/10 = 2.0, row = (190-200)/(-10) = 1.0
+        let (row, col) = t.world_to_pixel(Coord2D::new(120.0, 190.0));
+        assert!((row - 1.0).abs() < 1e-10);
+        assert!((col - 2.0).abs() < 1e-10);
+    }
+
+    #[test]
+    fn world_to_pixel_fractional() {
+        let t = simple_transform();
+        // World (105, 195): center of pixel (0,0)
+        let (row, col) = t.world_to_pixel(Coord2D::new(105.0, 195.0));
+        assert!((row - 0.5).abs() < 1e-10);
+        assert!((col - 0.5).abs() < 1e-10);
+    }
+
+    #[test]
+    fn very_small_pixel_size_accepted() {
+        // 1e-8 degree pixels (~1mm) should not be rejected as degenerate
+        let result = AffineTransform::north_up(0.0, 0.0, 1e-8, -1e-8);
+        assert!(result.is_ok());
     }
 }

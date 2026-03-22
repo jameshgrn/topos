@@ -52,16 +52,23 @@ pub enum ToposError {
     },
 
     /// A pixel or grid coordinate is out of bounds.
-    #[error("index out of bounds: row {row}, col {col} in grid of {rows}x{cols}")]
+    #[error("index out of bounds: pixel ({row:.1}, {col:.1}) outside {rows}x{cols} grid")]
     IndexOutOfBounds {
-        /// Requested row.
-        row: usize,
-        /// Requested column.
-        col: usize,
+        /// Computed pixel row (may be negative or fractional).
+        row: f64,
+        /// Computed pixel column (may be negative or fractional).
+        col: f64,
         /// Grid row count.
         rows: usize,
         /// Grid column count.
         cols: usize,
+    },
+
+    /// A coordinate contains non-finite values (NaN or infinity).
+    #[error("non-finite coordinate: {reason}")]
+    NonFinite {
+        /// What contained the non-finite value.
+        reason: String,
     },
 }
 
@@ -74,6 +81,3 @@ pub enum ToposError {
 /// "when someone writes `crate::Result<Foo>`, it expands to
 /// `std::result::Result<Foo, ToposError>`." Saves typing.
 pub type Result<T> = std::result::Result<T, ToposError>;
-
-// We need Crs to implement Display for the error messages.
-// That impl lives in crs.rs — we just need the import above.

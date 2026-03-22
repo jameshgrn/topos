@@ -17,6 +17,11 @@
 /// - In geographic CRS (like EPSG:4326): x = longitude, y = latitude
 /// - In projected CRS (like UTM): x = easting, y = northing
 ///
+/// Fields are public because `Coord2D` is a plain data carrier with no
+/// invariants to protect. NaN/infinity are allowed here — types that
+/// enforce invariants (like [`crate::Extent2D`]) validate coordinates
+/// at their own constructors.
+///
 /// # Rust concepts
 ///
 /// `Copy` means this type is trivially copyable — like an integer. When you

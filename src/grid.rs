@@ -130,10 +130,6 @@ impl GridDefinition {
     /// outside the grid.
     pub fn world_to_pixel(&self, coord: Coord2D) -> Result<(usize, usize)> {
         let (row_f, col_f) = self.transform.world_to_pixel(coord);
-
-        // Floor to get the containing pixel, then bounds-check before casting.
-        // We check the f64 values directly to avoid wrapping issues with
-        // negative-to-unsigned casts.
         let row_floor = row_f.floor();
         let col_floor = col_f.floor();
 
@@ -141,11 +137,9 @@ impl GridDefinition {
         let (nrows, ncols) = (self.rows as f64, self.cols as f64);
 
         if row_floor < 0.0 || row_floor >= nrows || col_floor < 0.0 || col_floor >= ncols {
-            // For the error message, clamp to 0 so we don't wrap negative f64 to huge usize.
-            #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
             return Err(ToposError::IndexOutOfBounds {
-                row: row_floor.max(0.0) as usize,
-                col: col_floor.max(0.0) as usize,
+                row: row_f,
+                col: col_f,
                 rows: self.rows,
                 cols: self.cols,
             });
@@ -290,5 +284,34 @@ mod tests {
         let t = AffineTransform::north_up(100.0, 200.0, 10.0, -10.0).unwrap();
         let g3 = GridDefinition::new(10, 30, t, Crs::epsg(32611)).unwrap();
         assert!(!g1.is_aligned_with(&g3));
+    }
+
+    #[test]
+    fn extent_rotated_grid() {
+        // 45-degree rotation: c1=cos(45)*res, c2=sin(45)*res, c4=-sin(45)*res, c5=cos(45)*res
+        // For simplicity, use a known rotated transform
+        let t = AffineTransform::new([0.0, 1.0, 1.0, 0.0, -1.0, 1.0]).unwrap();
+        let g = GridDefinition::new(10, 10, t, Crs::epsg(32611)).unwrap();
+        let e = g.extent();
+
+        // Corners: (0,0)=(0,0), (0,10)=(10,-10), (10,0)=(10,10), (10,10)=(20,0)
+        // Bounding box: x=[0,20], y=[-10,10]
+        assert!((e.min().x - 0.0).abs() < 1e-10);
+        assert!((e.min().y - (-10.0)).abs() < 1e-10);
+        assert!((e.max().x - 20.0).abs() < 1e-10);
+        assert!((e.max().y - 10.0).abs() < 1e-10);
+    }
+
+    #[test]
+    fn world_to_pixel_negative_reports_actual_coords() {
+        let g = make_grid();
+        // (0, 0) is far outside the grid (grid origin is at (100, 200))
+        let err = g.world_to_pixel(Coord2D::new(0.0, 0.0)).unwrap_err();
+        let msg = err.to_string();
+        // Should show negative pixel coordinates, not clamped zeros
+        assert!(
+            msg.contains("-"),
+            "error should show negative coords: {msg}"
+        );
     }
 }

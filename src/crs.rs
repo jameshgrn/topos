@@ -105,9 +105,15 @@ impl fmt::Display for Crs {
         match self {
             Self::Epsg(code) => write!(f, "EPSG:{code}"),
             Self::Wkt(wkt) => {
-                // Truncate long WKT strings in display
                 if wkt.len() > 40 {
-                    write!(f, "WKT[{}...]", &wkt[..37])
+                    // Find a safe char boundary at or before byte 37
+                    let truncate_at = wkt
+                        .char_indices()
+                        .map(|(i, _)| i)
+                        .take_while(|&i| i <= 37)
+                        .last()
+                        .unwrap_or(0);
+                    write!(f, "WKT[{}...]", &wkt[..truncate_at])
                 } else {
                     write!(f, "WKT[{wkt}]")
                 }
@@ -149,5 +155,30 @@ mod tests {
     fn as_epsg_returns_code_for_epsg_variant() {
         assert_eq!(Crs::epsg(4326).as_epsg(), Some(4326));
         assert_eq!(Crs::proj("+proj=utm".to_string()).as_epsg(), None);
+    }
+
+    #[test]
+    fn display_wkt_short() {
+        let crs = Crs::wkt("GEOGCS[\"WGS 84\"]".to_string());
+        assert_eq!(crs.to_string(), "WKT[GEOGCS[\"WGS 84\"]]");
+    }
+
+    #[test]
+    fn display_wkt_long_truncated() {
+        let long_wkt = "A".repeat(100);
+        let display = Crs::wkt(long_wkt).to_string();
+        assert!(display.ends_with("...]"));
+        assert!(display.len() < 50);
+    }
+
+    #[test]
+    fn display_wkt_long_with_multibyte_does_not_panic() {
+        // Place multi-byte chars near the truncation boundary
+        let mut wkt = "GEOGCS".to_string();
+        // Each emoji is 4 bytes — put several near byte 37
+        wkt.push_str(&"X".repeat(30));
+        wkt.push_str("🌍🌎🌏");
+        let display = Crs::wkt(wkt).to_string();
+        assert!(display.ends_with("...]"));
     }
 }

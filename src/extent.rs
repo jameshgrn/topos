@@ -60,6 +60,14 @@ impl Extent2D {
     /// assert_eq!(extent.height(), 180.0);
     /// ```
     pub fn new(min: Coord2D, max: Coord2D, crs: Crs) -> Result<Self> {
+        if !min.x.is_finite() || !min.y.is_finite() || !max.x.is_finite() || !max.y.is_finite() {
+            return Err(ToposError::NonFinite {
+                reason: format!(
+                    "extent corners must be finite, got min=({}, {}), max=({}, {})",
+                    min.x, min.y, max.x, max.y
+                ),
+            });
+        }
         if min.x > max.x {
             return Err(ToposError::InvalidExtent {
                 reason: format!("min_x ({}) > max_x ({})", min.x, max.x),
@@ -208,16 +216,14 @@ mod tests {
 
     #[test]
     fn width_and_height() {
-        let e =
-            Extent2D::new(Coord2D::new(10.0, 20.0), Coord2D::new(30.0, 50.0), wgs84()).unwrap();
+        let e = Extent2D::new(Coord2D::new(10.0, 20.0), Coord2D::new(30.0, 50.0), wgs84()).unwrap();
         assert_eq!(e.width(), 20.0);
         assert_eq!(e.height(), 30.0);
     }
 
     #[test]
     fn contains_point() {
-        let e =
-            Extent2D::new(Coord2D::new(0.0, 0.0), Coord2D::new(10.0, 10.0), wgs84()).unwrap();
+        let e = Extent2D::new(Coord2D::new(0.0, 0.0), Coord2D::new(10.0, 10.0), wgs84()).unwrap();
 
         assert!(e.contains(Coord2D::new(5.0, 5.0)));
         assert!(e.contains(Coord2D::new(0.0, 0.0))); // inclusive min
@@ -227,10 +233,8 @@ mod tests {
 
     #[test]
     fn intersection_overlapping() {
-        let a =
-            Extent2D::new(Coord2D::new(0.0, 0.0), Coord2D::new(10.0, 10.0), wgs84()).unwrap();
-        let b =
-            Extent2D::new(Coord2D::new(5.0, 5.0), Coord2D::new(15.0, 15.0), wgs84()).unwrap();
+        let a = Extent2D::new(Coord2D::new(0.0, 0.0), Coord2D::new(10.0, 10.0), wgs84()).unwrap();
+        let b = Extent2D::new(Coord2D::new(5.0, 5.0), Coord2D::new(15.0, 15.0), wgs84()).unwrap();
 
         let result = a.intersection(&b).unwrap().unwrap();
         assert_eq!(result.min(), Coord2D::new(5.0, 5.0));
@@ -239,30 +243,24 @@ mod tests {
 
     #[test]
     fn intersection_no_overlap() {
-        let a =
-            Extent2D::new(Coord2D::new(0.0, 0.0), Coord2D::new(1.0, 1.0), wgs84()).unwrap();
-        let b =
-            Extent2D::new(Coord2D::new(5.0, 5.0), Coord2D::new(6.0, 6.0), wgs84()).unwrap();
+        let a = Extent2D::new(Coord2D::new(0.0, 0.0), Coord2D::new(1.0, 1.0), wgs84()).unwrap();
+        let b = Extent2D::new(Coord2D::new(5.0, 5.0), Coord2D::new(6.0, 6.0), wgs84()).unwrap();
 
         assert!(a.intersection(&b).unwrap().is_none());
     }
 
     #[test]
     fn intersection_crs_mismatch() {
-        let a =
-            Extent2D::new(Coord2D::new(0.0, 0.0), Coord2D::new(1.0, 1.0), wgs84()).unwrap();
-        let b =
-            Extent2D::new(Coord2D::new(0.0, 0.0), Coord2D::new(1.0, 1.0), utm11n()).unwrap();
+        let a = Extent2D::new(Coord2D::new(0.0, 0.0), Coord2D::new(1.0, 1.0), wgs84()).unwrap();
+        let b = Extent2D::new(Coord2D::new(0.0, 0.0), Coord2D::new(1.0, 1.0), utm11n()).unwrap();
 
         assert!(a.intersection(&b).is_err());
     }
 
     #[test]
     fn union_extents() {
-        let a =
-            Extent2D::new(Coord2D::new(0.0, 0.0), Coord2D::new(5.0, 5.0), wgs84()).unwrap();
-        let b =
-            Extent2D::new(Coord2D::new(3.0, 3.0), Coord2D::new(10.0, 10.0), wgs84()).unwrap();
+        let a = Extent2D::new(Coord2D::new(0.0, 0.0), Coord2D::new(5.0, 5.0), wgs84()).unwrap();
+        let b = Extent2D::new(Coord2D::new(3.0, 3.0), Coord2D::new(10.0, 10.0), wgs84()).unwrap();
 
         let result = a.union(&b).unwrap();
         assert_eq!(result.min(), Coord2D::new(0.0, 0.0));
@@ -271,11 +269,59 @@ mod tests {
 
     #[test]
     fn union_crs_mismatch() {
-        let a =
-            Extent2D::new(Coord2D::new(0.0, 0.0), Coord2D::new(1.0, 1.0), wgs84()).unwrap();
-        let b =
-            Extent2D::new(Coord2D::new(0.0, 0.0), Coord2D::new(1.0, 1.0), utm11n()).unwrap();
+        let a = Extent2D::new(Coord2D::new(0.0, 0.0), Coord2D::new(1.0, 1.0), wgs84()).unwrap();
+        let b = Extent2D::new(Coord2D::new(0.0, 0.0), Coord2D::new(1.0, 1.0), utm11n()).unwrap();
 
         assert!(a.union(&b).is_err());
+    }
+
+    #[test]
+    fn nan_min_x_rejected() {
+        let result = Extent2D::new(Coord2D::new(f64::NAN, 0.0), Coord2D::new(1.0, 1.0), wgs84());
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn nan_max_y_rejected() {
+        let result = Extent2D::new(Coord2D::new(0.0, 0.0), Coord2D::new(1.0, f64::NAN), wgs84());
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn infinity_rejected() {
+        let result = Extent2D::new(
+            Coord2D::new(0.0, 0.0),
+            Coord2D::new(f64::INFINITY, 1.0),
+            wgs84(),
+        );
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn intersection_preserves_crs() {
+        let crs = Crs::epsg(32611);
+        let a = Extent2D::new(
+            Coord2D::new(0.0, 0.0),
+            Coord2D::new(10.0, 10.0),
+            crs.clone(),
+        )
+        .unwrap();
+        let b = Extent2D::new(
+            Coord2D::new(5.0, 5.0),
+            Coord2D::new(15.0, 15.0),
+            crs.clone(),
+        )
+        .unwrap();
+
+        let result = a.intersection(&b).unwrap().unwrap();
+        assert_eq!(*result.crs(), crs);
+    }
+
+    #[test]
+    fn display_format() {
+        let e = Extent2D::new(Coord2D::new(1.0, 2.0), Coord2D::new(3.0, 4.0), wgs84()).unwrap();
+        let s = e.to_string();
+        assert!(s.contains("1"));
+        assert!(s.contains("EPSG:4326"));
     }
 }
