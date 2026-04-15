@@ -1,0 +1,19 @@
+[tasks.write]
+summary = "Add extended GDAL recipes reference doc"
+prompt = """
+Orient:
+- Read packages/geospatial-skills/skills/gdal/SKILL.md for context on the existing skill.
+- The SKILL.md already references references/gdal-recipes.md but the file doesn't exist yet.
+
+Edit:
+1. Create packages/geospatial-skills/skills/gdal/references/gdal-recipes.md.
+2. Include extended recipes: COG creation with multiple compression options, VRT mosaics from file lists, river corridor extraction (buffer centerline + clip DEM), SWOT pass merging, float-to-byte quantization, band math with gdal_calc.py, batch processing patterns with shell loops.
+3. All commands must be copy-paste-ready with clear input/output placeholders.
+
+Verify:
+- File exists and is valid markdown.
+- No duplicate content with the parent SKILL.md quick reference section.
+"""
+commit_message = "add GDAL recipes reference for geospatial-skills"
+files.create = ["packages/geospatial-skills/skills/gdal/references/gdal-recipes.md"]
+files.read = ["packages/geospatial-skills/skills/gdal/SKILL.md"]

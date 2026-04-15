@@ -1,0 +1,14 @@
+node_modules/
+dist/
+build/
+*.js.map
+*.d.ts
+!src/**/*.d.ts
+.env
+.env.*
+__pycache__/
+*.pyc
+.venv/
+.ruff_cache/
+HANDOVER.md
+.DS_Store

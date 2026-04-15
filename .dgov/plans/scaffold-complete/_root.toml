@@ -1,0 +1,4 @@
+[plan]
+name = "scaffold-complete"
+summary = "Add CLAUDE.md, reference docs, and test infra to complete topos monorepo scaffold"
+sections = ["tasks"]

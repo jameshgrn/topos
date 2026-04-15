@@ -1,0 +1,25 @@
+[tasks.check]
+summary = "Review all scaffold changes"
+prompt = """
+Orient:
+- All prior tasks should be complete: CLAUDE.md, GDAL references, D3 references, test infra.
+- Read each created/edited file to verify quality.
+
+Edit:
+- No edits. This is a review-only task.
+
+Verify:
+- CLAUDE.md is accurate and matches actual repo structure.
+- Reference docs are practical and non-redundant with parent SKILL.md files.
+- `cd packages/geo-renderer && npx tsc --noEmit` passes.
+- `cd packages/geo-renderer && npx vitest run` passes.
+- Report any issues found.
+"""
+commit_message = "n/a"
+role = "researcher"
+depends_on = [
+  "tasks/claude-md.write",
+  "tasks/gdal-references.write",
+  "tasks/d3-references.write",
+  "tasks/test-infra.write",
+]

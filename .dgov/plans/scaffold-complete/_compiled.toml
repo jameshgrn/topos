@@ -1,0 +1,115 @@
+[plan]
+name = "scaffold-complete"
+source_mtime_max = "2026-04-15T17:29:26.738697Z"
+sop_set_hash = ""
+
+[tasks."tasks/claude-md.write"]
+summary = "Add CLAUDE.md with repo conventions"
+prompt = """
+Orient:
+- This is a new monorepo called topos at /Users/jakegearon/projects/topos.
+- Two packages exist: packages/geospatial-skills (Claude Code skills as SKILL.md files) and packages/geo-renderer (TypeScript MCP server for D3/GDAL rendering).
+- qgis-mcp will be added later but lives separately for now.
+
+Edit:
+1. Create CLAUDE.md at repo root.
+2. Include: monorepo structure, package descriptions, build commands (cd packages/geo-renderer && npm run build), type check (npx tsc --noEmit), branch strategy (feature branches only, never push to main), note that geospatial-skills is pure markdown (no build step).
+
+Verify:
+- Confirm CLAUDE.md exists and is well-formed markdown.
+"""
+commit_message = "add CLAUDE.md with repo conventions"
+files.create = ["CLAUDE.md"]
+
+[tasks."tasks/d3-references.write"]
+summary = "Add D3 projection and Natural Earth reference docs"
+prompt = """
+Orient:
+- Read packages/geospatial-skills/skills/d3-cartography/SKILL.md for context.
+- The SKILL.md references two files that don't exist yet: references/d3-projections.md and references/natural-earth-data.md.
+
+Edit:
+1. Create packages/geospatial-skills/skills/d3-cartography/references/d3-projections.md.
+   - Cheat sheet of D3 geo projections: name, d3 function, typical use case, rotation params, recommended scale range.
+   - Cover: geoOrthographic, geoNaturalEarth1, geoMercator, geoAlbersUsa, geoEquirectangular, geoTransverseMercator, geoAzimuthalEqualArea, geoConicEqualArea, geoStereographic.
+   - Include notes on clipAngle, clipExtent, and precision.
+
+2. Create packages/geospatial-skills/skills/d3-cartography/references/natural-earth-data.md.
+   - Data source URLs: world-atlas npm package (TopoJSON), Natural Earth shapefiles (naturalearthdata.com), resolution tiers (10m/50m/110m) with size tradeoffs.
+   - How to convert shp to TopoJSON for D3 (ogr2ogr + topojson CLI).
+   - Key datasets: countries, admin-1, rivers, lakes, coastline, graticule.
+
+Verify:
+- Both files exist and are valid markdown.
+"""
+commit_message = "add D3 projection and Natural Earth reference docs"
+files.create = ["packages/geospatial-skills/skills/d3-cartography/references/d3-projections.md", "packages/geospatial-skills/skills/d3-cartography/references/natural-earth-data.md"]
+files.read = ["packages/geospatial-skills/skills/d3-cartography/SKILL.md"]
+
+[tasks."tasks/gdal-references.write"]
+summary = "Add extended GDAL recipes reference doc"
+prompt = """
+Orient:
+- Read packages/geospatial-skills/skills/gdal/SKILL.md for context on the existing skill.
+- The SKILL.md already references references/gdal-recipes.md but the file doesn't exist yet.
+
+Edit:
+1. Create packages/geospatial-skills/skills/gdal/references/gdal-recipes.md.
+2. Include extended recipes: COG creation with multiple compression options, VRT mosaics from file lists, river corridor extraction (buffer centerline + clip DEM), SWOT pass merging, float-to-byte quantization, band math with gdal_calc.py, batch processing patterns with shell loops.
+3. All commands must be copy-paste-ready with clear input/output placeholders.
+
+Verify:
+- File exists and is valid markdown.
+- No duplicate content with the parent SKILL.md quick reference section.
+"""
+commit_message = "add GDAL recipes reference for geospatial-skills"
+files.create = ["packages/geospatial-skills/skills/gdal/references/gdal-recipes.md"]
+files.read = ["packages/geospatial-skills/skills/gdal/SKILL.md"]
+
+[tasks."tasks/review.check"]
+summary = "Review all scaffold changes"
+prompt = """
+Orient:
+- All prior tasks should be complete: CLAUDE.md, GDAL references, D3 references, test infra.
+- Read each created/edited file to verify quality.
+
+Edit:
+- No edits. This is a review-only task.
+
+Verify:
+- CLAUDE.md is accurate and matches actual repo structure.
+- Reference docs are practical and non-redundant with parent SKILL.md files.
+- `cd packages/geo-renderer && npx tsc --noEmit` passes.
+- `cd packages/geo-renderer && npx vitest run` passes.
+- Report any issues found.
+"""
+commit_message = "n/a"
+role = "researcher"
+depends_on = ["tasks/claude-md.write", "tasks/gdal-references.write", "tasks/d3-references.write", "tasks/test-infra.write"]
+
+[tasks."tasks/test-infra.write"]
+summary = "Add vitest and locator globe smoke test to geo-renderer"
+prompt = """
+Orient:
+- Read packages/geo-renderer/package.json and packages/geo-renderer/tsconfig.json for current config.
+- Read packages/geo-renderer/src/tools/locator-globe.ts for the tool implementation.
+- The package has no test runner or test directory yet.
+
+Edit:
+1. Add vitest as a dev dependency in packages/geo-renderer/package.json. Add a "test" script: "vitest run".
+2. Create packages/geo-renderer/vitest.config.ts — minimal config pointing at test/.
+3. Create packages/geo-renderer/test/globe.test.ts:
+   - Test that registerLocatorGlobe can be called on a McpServer instance without throwing.
+   - Mock global fetch to return a minimal world-atlas TopoJSON fixture (a valid topology with one country polygon).
+   - Call the tool handler directly with Tonga coords (lat=-21.2, lon=-175.2, label="TONGA", size=500).
+   - Assert the output SVG string contains: <svg, <path, <circle, TONGA text.
+4. Run npm install after editing package.json.
+
+Verify:
+- `cd packages/geo-renderer && npx tsc --noEmit` passes.
+- `cd packages/geo-renderer && npx vitest run` passes.
+"""
+commit_message = "add vitest and locator globe smoke test"
+files.create = ["packages/geo-renderer/vitest.config.ts", "packages/geo-renderer/test/globe.test.ts"]
+files.edit = ["packages/geo-renderer/package.json"]
+files.read = ["packages/geo-renderer/tsconfig.json", "packages/geo-renderer/src/tools/locator-globe.ts"]

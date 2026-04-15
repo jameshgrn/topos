@@ -1,0 +1,17 @@
+[tasks.write]
+summary = "Add CLAUDE.md with repo conventions"
+prompt = """
+Orient:
+- This is a new monorepo called topos at /Users/jakegearon/projects/topos.
+- Two packages exist: packages/geospatial-skills (Claude Code skills as SKILL.md files) and packages/geo-renderer (TypeScript MCP server for D3/GDAL rendering).
+- qgis-mcp will be added later but lives separately for now.
+
+Edit:
+1. Create CLAUDE.md at repo root.
+2. Include: monorepo structure, package descriptions, build commands (cd packages/geo-renderer && npm run build), type check (npx tsc --noEmit), branch strategy (feature branches only, never push to main), note that geospatial-skills is pure markdown (no build step).
+
+Verify:
+- Confirm CLAUDE.md exists and is well-formed markdown.
+"""
+commit_message = "add CLAUDE.md with repo conventions"
+files.create = ["CLAUDE.md"]

@@ -1,0 +1,27 @@
+[tasks.write]
+summary = "Add D3 projection and Natural Earth reference docs"
+prompt = """
+Orient:
+- Read packages/geospatial-skills/skills/d3-cartography/SKILL.md for context.
+- The SKILL.md references two files that don't exist yet: references/d3-projections.md and references/natural-earth-data.md.
+
+Edit:
+1. Create packages/geospatial-skills/skills/d3-cartography/references/d3-projections.md.
+   - Cheat sheet of D3 geo projections: name, d3 function, typical use case, rotation params, recommended scale range.
+   - Cover: geoOrthographic, geoNaturalEarth1, geoMercator, geoAlbersUsa, geoEquirectangular, geoTransverseMercator, geoAzimuthalEqualArea, geoConicEqualArea, geoStereographic.
+   - Include notes on clipAngle, clipExtent, and precision.
+
+2. Create packages/geospatial-skills/skills/d3-cartography/references/natural-earth-data.md.
+   - Data source URLs: world-atlas npm package (TopoJSON), Natural Earth shapefiles (naturalearthdata.com), resolution tiers (10m/50m/110m) with size tradeoffs.
+   - How to convert shp to TopoJSON for D3 (ogr2ogr + topojson CLI).
+   - Key datasets: countries, admin-1, rivers, lakes, coastline, graticule.
+
+Verify:
+- Both files exist and are valid markdown.
+"""
+commit_message = "add D3 projection and Natural Earth reference docs"
+files.create = [
+  "packages/geospatial-skills/skills/d3-cartography/references/d3-projections.md",
+  "packages/geospatial-skills/skills/d3-cartography/references/natural-earth-data.md",
+]
+files.read = ["packages/geospatial-skills/skills/d3-cartography/SKILL.md"]

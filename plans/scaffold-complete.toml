@@ -1,0 +1,50 @@
+[plan]
+name = "topos-scaffold-complete"
+
+[tasks.claude-md]
+summary = "Add CLAUDE.md with repo conventions"
+prompt = "Create CLAUDE.md at repo root. Include: monorepo structure (packages/geospatial-skills for Claude Code skills, packages/geo-renderer for TS MCP server), build commands (npm run build in geo-renderer), lint (npx tsc --noEmit), branch strategy (feature branches only, never push to main). Keep it concise."
+commit_message = "add CLAUDE.md with repo conventions"
+role = "worker"
+depends_on = []
+files = { create = ["CLAUDE.md"] }
+
+[tasks.gdal-references]
+summary = "Add extended GDAL recipes reference doc"
+prompt = "Create packages/geospatial-skills/skills/gdal/references/gdal-recipes.md with extended GDAL CLI recipes: COG creation, VRT mosaics, river corridor extraction (buffer centerline + clip DEM), SWOT pass merging, float-to-byte quantization, band math. Practical, copy-paste-ready commands."
+commit_message = "add GDAL recipes reference for geospatial-skills"
+role = "worker"
+depends_on = []
+files = { create = ["packages/geospatial-skills/skills/gdal/references/gdal-recipes.md"] }
+
+[tasks.d3-references]
+summary = "Add D3 projection and Natural Earth reference docs"
+prompt = "Create two files: (1) packages/geospatial-skills/skills/d3-cartography/references/d3-projections.md — cheat sheet of D3 projections with use cases, rotation params, scale guidance. (2) packages/geospatial-skills/skills/d3-cartography/references/natural-earth-data.md — data source URLs (world-atlas npm, Natural Earth shapefiles), resolution tiers, how to convert shp to TopoJSON for D3."
+commit_message = "add D3 projection and Natural Earth reference docs"
+role = "worker"
+depends_on = []
+files = { create = [
+  "packages/geospatial-skills/skills/d3-cartography/references/d3-projections.md",
+  "packages/geospatial-skills/skills/d3-cartography/references/natural-earth-data.md",
+] }
+
+[tasks.test-infra]
+summary = "Add vitest and locator globe smoke test to geo-renderer"
+prompt = "In packages/geo-renderer: (1) add vitest as dev dependency, add test script to package.json. (2) Create vitest.config.ts. (3) Create test/globe.test.ts — import registerLocatorGlobe, verify it registers without error, verify tool can be called with mock params and produces SVG containing expected elements (svg tag, path elements, circle). Do NOT test network calls to world-atlas CDN — mock fetch."
+commit_message = "add vitest and locator globe smoke test"
+role = "worker"
+depends_on = []
+files = { create = [
+  "packages/geo-renderer/vitest.config.ts",
+  "packages/geo-renderer/test/globe.test.ts",
+], edit = [
+  "packages/geo-renderer/package.json",
+] }
+
+[tasks.review]
+summary = "Review all scaffold changes"
+prompt = "Review CLAUDE.md accuracy, reference doc quality, test infra correctness. Verify tsc --noEmit passes. Verify vitest runs. Report issues."
+commit_message = "review scaffold completion"
+role = "researcher"
+depends_on = ["claude-md", "gdal-references", "d3-references", "test-infra"]
+files = {}

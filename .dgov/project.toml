@@ -1,0 +1,51 @@
+[project]
+language = "javascript"
+src_dir = "."
+test_dir = "tests/"
+source_extensions = [".js", ".ts", ".tsx"]
+
+# OpenAI-compatible worker endpoint
+default_agent = "accounts/fireworks/routers/kimi-k2p5-turbo"
+llm_base_url = "https://api.fireworks.ai/inference/v1"
+llm_api_key_env = "FIREWORKS_API_KEY"
+
+# Sentrux baseline is explicit governor-owned state.
+# Run "dgov sentrux gate-save" after bootstrap and whenever you intentionally
+# refresh the architectural baseline for this repo.
+
+test_cmd = "npx vitest run {test_dir}"
+lint_cmd = "npx eslint {file}"
+format_cmd = "npx prettier --write {file}"
+lint_fix_cmd = "npx eslint --fix {file}"
+format_check_cmd = "npx prettier --check {file}"
+# type_check_cmd = ""  # Optional: e.g. 'uv run ty check' for Python
+
+# Settlement timeout in seconds
+settlement_timeout = 120
+
+# Target line length for formatting and wrapping
+line_length = 99
+
+# Fast review hooks (git sanity checks). {file} is replaced with changed files.
+review_hooks = [
+  # "grep -q 'TODO' {file} && exit 1 || exit 0",  # Example: reject TODOs
+  # "detect-secrets-hook --baseline .secrets.baseline {file}",  # Example: secrets
+]
+
+[tool_policy]
+restrict_run_bash = true
+deny_shell_commands = ["pip", "python -m pip", "pip3", "python -m venv", "uv venv"]
+deny_shell_file_mutations = true
+require_wrapped_verify_tools = false
+require_uv_run = false
+
+[scope]
+# Files exempted from scope-violation checks. Workers may incidentally
+# touch these (e.g. `uv run` refreshing uv.lock) without failing review.
+# Auto-seeded by `dgov init` from detected managed files plus Python's uv.lock default.
+# Exact paths only — no globs.
+ignore_files = []
+
+[conventions]
+# Add project-specific rules here for the agent to follow
+# style = "Prefer functional over OOP"

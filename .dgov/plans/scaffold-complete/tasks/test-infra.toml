@@ -1,0 +1,32 @@
+[tasks.write]
+summary = "Add vitest and locator globe smoke test to geo-renderer"
+prompt = """
+Orient:
+- Read packages/geo-renderer/package.json and packages/geo-renderer/tsconfig.json for current config.
+- Read packages/geo-renderer/src/tools/locator-globe.ts for the tool implementation.
+- The package has no test runner or test directory yet.
+
+Edit:
+1. Add vitest as a dev dependency in packages/geo-renderer/package.json. Add a "test" script: "vitest run".
+2. Create packages/geo-renderer/vitest.config.ts — minimal config pointing at test/.
+3. Create packages/geo-renderer/test/globe.test.ts:
+   - Test that registerLocatorGlobe can be called on a McpServer instance without throwing.
+   - Mock global fetch to return a minimal world-atlas TopoJSON fixture (a valid topology with one country polygon).
+   - Call the tool handler directly with Tonga coords (lat=-21.2, lon=-175.2, label="TONGA", size=500).
+   - Assert the output SVG string contains: <svg, <path, <circle, TONGA text.
+4. Run npm install after editing package.json.
+
+Verify:
+- `cd packages/geo-renderer && npx tsc --noEmit` passes.
+- `cd packages/geo-renderer && npx vitest run` passes.
+"""
+commit_message = "add vitest and locator globe smoke test"
+files.create = [
+  "packages/geo-renderer/vitest.config.ts",
+  "packages/geo-renderer/test/globe.test.ts",
+]
+files.edit = ["packages/geo-renderer/package.json"]
+files.read = [
+  "packages/geo-renderer/tsconfig.json",
+  "packages/geo-renderer/src/tools/locator-globe.ts",
+]
