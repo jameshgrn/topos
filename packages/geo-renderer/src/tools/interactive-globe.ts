@@ -122,6 +122,77 @@ function buildCesiumHtml(params: {
       background: rgba(0,120,255,0.3);
       border-color: rgba(0,120,255,0.5);
     }
+    /* Basemap picker panel */
+    .basemap-panel {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      background: ${params.dark_mode ? "rgba(10,10,20,0.9)" : "rgba(255,255,255,0.95)"};
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: ${textColor};
+      border: 1px solid ${params.dark_mode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.1)"};
+      border-radius: 10px;
+      max-height: 70vh;
+      overflow-y: auto;
+      z-index: 10;
+      display: none;
+      min-width: 200px;
+    }
+    .basemap-panel.visible {
+      display: block;
+    }
+    .bm-toggle {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      background: ${params.dark_mode ? "rgba(10,10,20,0.85)" : "rgba(255,255,255,0.9)"};
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: ${textColor};
+      border: 1px solid ${params.dark_mode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.1)"};
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, sans-serif;
+      z-index: 11;
+    }
+    .bm-toggle:hover {
+      background: ${params.dark_mode ? "rgba(30,30,40,0.9)" : "rgba(240,240,240,0.95)"};
+    }
+    .bm-group-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: ${params.dark_mode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)"};
+      padding: 10px 14px 4px;
+      font-weight: 600;
+    }
+    .bm-item {
+      padding: 8px 16px;
+      font-size: 12px;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: background 0.15s;
+    }
+    .bm-item:hover {
+      background: ${params.dark_mode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)"};
+    }
+    .bm-item.active {
+      background: rgba(0,120,255,0.15);
+      border-left-color: rgba(0,120,255,0.8);
+    }
+    .basemap-panel::-webkit-scrollbar {
+      width: 6px;
+    }
+    .basemap-panel::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .basemap-panel::-webkit-scrollbar-thumb {
+      background: ${params.dark_mode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)"};
+      border-radius: 3px;
+    }
     /* Hide Cesium default UI chrome */
     .cesium-viewer-toolbar,
     .cesium-viewer-animationContainer,
@@ -144,8 +215,87 @@ function buildCesiumHtml(params: {
     <button onclick="resetView()">Reset</button>
     <button onclick="toggleTerrain()">Terrain</button>
   </div>
+  <button class="bm-toggle" onclick="toggleBasemapPanel()" title="Change basemap">≡ Basemaps</button>
+  <div class="basemap-panel" id="basemapPanel">
+    <div class="bm-group-label">Satellite / Imagery</div>
+    ${params.tileUrl && params.tileAttribution.includes("Planet") ? '<div class="bm-item" data-name="Planet Monthly" onclick="switchBasemap(\'Planet Monthly\')">Planet Monthly</div>' : ""}
+    <div class="bm-item" data-name="Esri World Imagery" onclick="switchBasemap('Esri World Imagery')">Esri World Imagery</div>
+    <div class="bm-item" data-name="USGS Imagery" onclick="switchBasemap('USGS Imagery')">USGS Imagery</div>
+    <div class="bm-group-label">Ocean / Terrain</div>
+    <div class="bm-item" data-name="Esri Ocean" onclick="switchBasemap('Esri Ocean')">Esri Ocean</div>
+    <div class="bm-item" data-name="Esri Shaded Relief" onclick="switchBasemap('Esri Shaded Relief')">Esri Shaded Relief</div>
+    <div class="bm-item" data-name="Esri Terrain" onclick="switchBasemap('Esri Terrain')">Esri Terrain</div>
+    <div class="bm-item" data-name="OpenTopoMap" onclick="switchBasemap('OpenTopoMap')">OpenTopoMap</div>
+    <div class="bm-item" data-name="Esri World Topo" onclick="switchBasemap('Esri World Topo')">Esri World Topo</div>
+    <div class="bm-group-label">Street / General</div>
+    <div class="bm-item" data-name="OSM Standard" onclick="switchBasemap('OSM Standard')">OSM Standard</div>
+    <div class="bm-item" data-name="CartoDB Voyager" onclick="switchBasemap('CartoDB Voyager')">CartoDB Voyager</div>
+    <div class="bm-item" data-name="CartoDB Positron" onclick="switchBasemap('CartoDB Positron')">CartoDB Positron</div>
+    <div class="bm-item" data-name="CartoDB Dark Matter" onclick="switchBasemap('CartoDB Dark Matter')">CartoDB Dark Matter</div>
+    <div class="bm-group-label">Reference</div>
+    <div class="bm-item" data-name="Esri NatGeo" onclick="switchBasemap('Esri NatGeo')">Esri NatGeo</div>
+    <div class="bm-item" data-name="Esri Gray Canvas" onclick="switchBasemap('Esri Gray Canvas')">Esri Gray Canvas</div>
+    <div class="bm-group-label">Artistic</div>
+    <div class="bm-item" data-name="Stamen Toner" onclick="switchBasemap('Stamen Toner')">Stamen Toner</div>
+    <div class="bm-item" data-name="Stamen Watercolor" onclick="switchBasemap('Stamen Watercolor')">Stamen Watercolor</div>
+  </div>
   <script>
     Cesium.Ion.defaultAccessToken = ${JSON.stringify(params.cesiumToken)};
+
+    // Basemap catalog
+    var PLANET_TILE_URL_OR_NULL = ${JSON.stringify(params.tileUrl && params.tileAttribution.includes("Planet") ? params.tileUrl : null)};
+    var BASEMAPS = {
+      // Satellite / Imagery
+      "Planet Monthly": { url: PLANET_TILE_URL_OR_NULL, maxZoom: 18, attr: "Planet Labs" },
+      "Esri World Imagery": { url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", maxZoom: 18, attr: "Esri, Maxar" },
+      "USGS Imagery": { url: "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}", maxZoom: 20, attr: "USGS" },
+      // Ocean / Terrain
+      "Esri Ocean": { url: "https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}", maxZoom: 13, attr: "Esri, GEBCO, NOAA" },
+      "Esri Shaded Relief": { url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}", maxZoom: 13, attr: "Esri" },
+      "Esri Terrain": { url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}", maxZoom: 13, attr: "Esri" },
+      "OpenTopoMap": { url: "https://a.tile.opentopomap.org/{z}/{x}/{y}.png", maxZoom: 17, attr: "OpenTopoMap" },
+      "Esri World Topo": { url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}", maxZoom: 18, attr: "Esri" },
+      // Street / General
+      "OSM Standard": { url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png", maxZoom: 19, attr: "OpenStreetMap" },
+      "CartoDB Voyager": { url: "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png", maxZoom: 20, attr: "CARTO" },
+      "CartoDB Positron": { url: "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png", maxZoom: 20, attr: "CARTO" },
+      "CartoDB Dark Matter": { url: "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png", maxZoom: 20, attr: "CARTO" },
+      // Reference
+      "Esri NatGeo": { url: "https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}", maxZoom: 16, attr: "Esri, National Geographic" },
+      "Esri Gray Canvas": { url: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", maxZoom: 16, attr: "Esri" },
+      // Artistic
+      "Stamen Toner": { url: "https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}.png", maxZoom: 20, attr: "Stadia Maps" },
+      "Stamen Watercolor": { url: "https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg", maxZoom: 18, attr: "Stadia Maps" },
+    };
+
+    // Determine initial basemap
+    var currentBasemap = "${params.tileUrl && params.tileAttribution.includes("Planet") ? "Planet Monthly" : (params.tileAttribution.includes("Esri, GEBCO") ? "Esri Ocean" : (params.tileAttribution || "Esri Ocean"))}";
+
+    function switchBasemap(name) {
+      var bm = BASEMAPS[name];
+      if (!bm || !bm.url) return;
+      // Remove all imagery layers
+      viewer.imageryLayers.removeAll();
+      // Add selected basemap
+      viewer.imageryLayers.addImageryProvider(
+        new Cesium.UrlTemplateImageryProvider({
+          url: bm.url,
+          maximumLevel: bm.maxZoom,
+          credit: bm.attr,
+        })
+      );
+      currentBasemap = name;
+      document.querySelector(".info-panel .attribution").textContent = bm.attr;
+      // Update active state in picker
+      document.querySelectorAll(".bm-item").forEach(function(el) {
+        el.classList.toggle("active", el.dataset.name === name);
+      });
+    }
+
+    function toggleBasemapPanel() {
+      var panel = document.getElementById("basemapPanel");
+      panel.classList.toggle("visible");
+    }
 
     // ESRI Ocean basemap as the base layer (covers ocean areas)
     var esriOcean = new Cesium.UrlTemplateImageryProvider({
@@ -312,6 +462,11 @@ function buildCesiumHtml(params: {
         viewer.scene.setTerrain(new Cesium.Terrain(Cesium.EllipsoidTerrainProvider.fromUrl()));
       }
     }
+
+    // Set initial active basemap in picker
+    document.querySelectorAll(".bm-item").forEach(function(el) {
+      el.classList.toggle("active", el.dataset.name === currentBasemap);
+    });
 
     // Update coords on click
     handler.setInputAction(function(movement) {
