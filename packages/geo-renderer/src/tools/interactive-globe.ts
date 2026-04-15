@@ -455,8 +455,10 @@ function buildCesiumHtml(params: {
       <input type="range" min="0" max="100" value="40" oninput="setSpinSpeed(this.value)" style="width:100px;accent-color:rgba(80,130,255,0.8);" />
       <span id="speedLabel" style="font-size:10px;opacity:0.5;min-width:28px;text-align:right;">1x</span>
     </div>
+    <button onclick="flybyView()">Flyby</button>
     <button onclick="resetView()">Reset</button>
     <button onclick="toggleTerrain()">Terrain</button>
+    <button id="btn-sun" class="active" onclick="toggleSun()">&#9728; Sun</button>
   </div>
   <button class="lp-toggle" id="lpToggleBtn" onclick="togglePanel()">&#9776;&ensp;Layers</button>
   <div class="layer-panel" id="layerPanel">
@@ -477,16 +479,46 @@ function buildCesiumHtml(params: {
       <div class="lp-section-head" style="padding-top:6px">Satellite / Imagery</div>
       <div class="lp-cat-item" onclick="addLayerFromCatalog('Esri World Imagery')"><span class="plus">+</span> Esri World Imagery</div>
       <div class="lp-cat-item" onclick="addLayerFromCatalog('USGS Imagery')"><span class="plus">+</span> USGS Imagery</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('swisstopo SWISSIMAGE')"><span class="plus">+</span> swisstopo SWISSIMAGE</div>
+      <div class="lp-section-head">Earth Science / Geology</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('Macrostrat Geology')"><span class="plus">+</span> Macrostrat Geology</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('Macrostrat Geology (emphasized)')"><span class="plus">+</span> Macrostrat Geology (slim)</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('SafeCast Radiation')"><span class="plus">+</span> SafeCast Radiation</div>
+      <div class="lp-section-head">Hydrology / Water</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('USGS Hydrography')"><span class="plus">+</span> USGS Hydrography (NHD)</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('OpenSeaMap')"><span class="plus">+</span> OpenSeaMap (nautical)</div>
       <div class="lp-section-head">Ocean / Terrain</div>
       <div class="lp-cat-item" onclick="addLayerFromCatalog('Esri Ocean')"><span class="plus">+</span> Esri Ocean</div>
       <div class="lp-cat-item" onclick="addLayerFromCatalog('Esri Shaded Relief')"><span class="plus">+</span> Esri Shaded Relief</div>
       <div class="lp-cat-item" onclick="addLayerFromCatalog('OpenTopoMap')"><span class="plus">+</span> OpenTopoMap</div>
       <div class="lp-cat-item" onclick="addLayerFromCatalog('Esri World Topo')"><span class="plus">+</span> Esri World Topo</div>
+      <div class="lp-section-head">Transport / Infrastructure</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('OpenRailwayMap')"><span class="plus">+</span> OpenRailwayMap</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('Rail Signals')"><span class="plus">+</span> Rail Signals</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('Rail Electrification')"><span class="plus">+</span> Rail Electrification</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('Rail Speed')"><span class="plus">+</span> Rail Speed</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('CyclOSM')"><span class="plus">+</span> CyclOSM</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('CyclOSM Lite')"><span class="plus">+</span> CyclOSM Lite (overlay)</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('Public Transit')"><span class="plus">+</span> Public Transit</div>
+      <div class="lp-section-head">Trails / Recreation</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('Waymarked Hiking')"><span class="plus">+</span> Waymarked Hiking</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('Waymarked Cycling')"><span class="plus">+</span> Waymarked Cycling</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('Waymarked MTB')"><span class="plus">+</span> Waymarked MTB</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('Waymarked Slopes')"><span class="plus">+</span> Waymarked Slopes</div>
+      <div class="lp-section-head">National Agencies</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('TopPlusOpen (DE)')"><span class="plus">+</span> TopPlusOpen Germany</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('TopPlusOpen Grey (DE)')"><span class="plus">+</span> TopPlusOpen Grey (DE)</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('swisstopo Color')"><span class="plus">+</span> swisstopo Color (CH)</div>
       <div class="lp-section-head">Street / General</div>
       <div class="lp-cat-item" onclick="addLayerFromCatalog('OSM Standard')"><span class="plus">+</span> OSM Standard</div>
       <div class="lp-cat-item" onclick="addLayerFromCatalog('CartoDB Voyager')"><span class="plus">+</span> CartoDB Voyager</div>
       <div class="lp-cat-item" onclick="addLayerFromCatalog('CartoDB Positron')"><span class="plus">+</span> CartoDB Positron</div>
       <div class="lp-cat-item" onclick="addLayerFromCatalog('CartoDB Dark Matter')"><span class="plus">+</span> CartoDB Dark Matter</div>
+      <div class="lp-section-head">Labels / No-Labels</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('CartoDB Positron Labels')"><span class="plus">+</span> Positron Labels (overlay)</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('CartoDB Dark Labels')"><span class="plus">+</span> Dark Labels (overlay)</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('CartoDB Positron No Labels')"><span class="plus">+</span> Positron No Labels</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('CartoDB Dark No Labels')"><span class="plus">+</span> Dark No Labels</div>
       <div class="lp-section-head">Reference</div>
       <div class="lp-cat-item" onclick="addLayerFromCatalog('Esri NatGeo')"><span class="plus">+</span> Esri NatGeo</div>
       <div class="lp-cat-item" onclick="addLayerFromCatalog('Esri Gray Canvas')"><span class="plus">+</span> Esri Gray Canvas</div>
@@ -541,6 +573,39 @@ function buildCesiumHtml(params: {
       "Esri Gray Canvas": { url: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", maxZoom: 16, attr: "Esri" },
       "Stamen Toner": { url: "https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}.png", maxZoom: 20, attr: "Stadia Maps" },
       "Stamen Watercolor": { url: "https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg", maxZoom: 18, attr: "Stadia Maps" },
+      // Earth Science / Geology
+      "Macrostrat Geology": { url: "https://tiles.macrostrat.org/carto/{z}/{x}/{y}.png", maxZoom: 16, attr: "Macrostrat, CC-BY 4.0" },
+      "Macrostrat Geology (emphasized)": { url: "https://tiles.macrostrat.org/carto-slim/{z}/{x}/{y}.png", maxZoom: 16, attr: "Macrostrat, CC-BY 4.0" },
+      // Hydrology
+      "USGS Hydrography": { url: "https://basemap.nationalmap.gov/arcgis/rest/services/USGSHydroCached/MapServer/tile/{z}/{y}/{x}", maxZoom: 16, attr: "USGS NHD" },
+      // Marine / Nautical
+      "OpenSeaMap": { url: "https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png", maxZoom: 19, attr: "OpenSeaMap" },
+      // National Agencies
+      "TopPlusOpen (DE)": { url: "https://sgx.geodatenzentrum.de/wmts_topplus_open/tile/1.0.0/web/default/WEBMERCATOR/{z}/{y}/{x}.png", maxZoom: 18, attr: "BKG, dl-de/by-2-0" },
+      "TopPlusOpen Grey (DE)": { url: "https://sgx.geodatenzentrum.de/wmts_topplus_open/tile/1.0.0/web_grau/default/WEBMERCATOR/{z}/{y}/{x}.png", maxZoom: 18, attr: "BKG, dl-de/by-2-0" },
+      "swisstopo SWISSIMAGE": { url: "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swissimage/default/current/3857/{z}/{x}/{y}.jpeg", maxZoom: 19, attr: "swisstopo" },
+      "swisstopo Color": { url: "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg", maxZoom: 18, attr: "swisstopo" },
+      // Transport / Infrastructure
+      "OpenRailwayMap": { url: "https://tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png", maxZoom: 19, attr: "OpenRailwayMap, CC-BY-SA" },
+      "Rail Signals": { url: "https://tiles.openrailwaymap.org/signals/{z}/{x}/{y}.png", maxZoom: 19, attr: "OpenRailwayMap, CC-BY-SA" },
+      "Rail Electrification": { url: "https://tiles.openrailwaymap.org/electrification/{z}/{x}/{y}.png", maxZoom: 19, attr: "OpenRailwayMap, CC-BY-SA" },
+      "Rail Speed": { url: "https://tiles.openrailwaymap.org/maxspeed/{z}/{x}/{y}.png", maxZoom: 19, attr: "OpenRailwayMap, CC-BY-SA" },
+      "CyclOSM": { url: "https://a.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png", maxZoom: 20, attr: "CyclOSM, OSM" },
+      "CyclOSM Lite": { url: "https://a.tile-cyclosm.openstreetmap.fr/cyclosm-lite/{z}/{x}/{y}.png", maxZoom: 20, attr: "CyclOSM, OSM" },
+      "Public Transit": { url: "https://tileserver.memomaps.de/tilegen/{z}/{x}/{y}.png", maxZoom: 18, attr: "memomaps.de, CC-BY-SA" },
+      // Trails / Recreation
+      "Waymarked Hiking": { url: "https://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png", maxZoom: 18, attr: "waymarkedtrails.org, CC-BY-SA" },
+      "Waymarked Cycling": { url: "https://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png", maxZoom: 18, attr: "waymarkedtrails.org, CC-BY-SA" },
+      "Waymarked MTB": { url: "https://tile.waymarkedtrails.org/mtb/{z}/{x}/{y}.png", maxZoom: 18, attr: "waymarkedtrails.org, CC-BY-SA" },
+      "Waymarked Slopes": { url: "https://tile.waymarkedtrails.org/slopes/{z}/{x}/{y}.png", maxZoom: 18, attr: "waymarkedtrails.org, CC-BY-SA" },
+      // Environment / Hazards
+      "SafeCast Radiation": { url: "https://s3.amazonaws.com/te512.safecast.org/{z}/{x}/{y}.png", maxZoom: 16, attr: "SafeCast, CC0" },
+      // Labels-only overlays
+      "CartoDB Positron Labels": { url: "https://a.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png", maxZoom: 20, attr: "CARTO" },
+      "CartoDB Dark Labels": { url: "https://a.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}.png", maxZoom: 20, attr: "CARTO" },
+      // No-labels bases
+      "CartoDB Positron No Labels": { url: "https://a.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png", maxZoom: 20, attr: "CARTO" },
+      "CartoDB Dark No Labels": { url: "https://a.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png", maxZoom: 20, attr: "CARTO" },
     };
 
     // --- Layer management ---
@@ -550,6 +615,16 @@ function buildCesiumHtml(params: {
     function addLayer(name) {
       var bm = BASEMAPS[name];
       if (!bm || !bm.url || activeLayers[name]) return;
+      // If already in preload cache, move to active layers
+      if (preloadCache[name]) {
+        var preloadedLayer = preloadCache[name];
+        preloadedLayer.show = true;
+        delete preloadCache[name];
+        activeLayers[name] = { layer: preloadedLayer, visible: true };
+        layerOrder.push(name);
+        renderStack();
+        return;
+      }
       var layer = viewer.imageryLayers.addImageryProvider(
         new Cesium.UrlTemplateImageryProvider({ url: bm.url, maximumLevel: bm.maxZoom, credit: bm.attr })
       );
@@ -560,19 +635,25 @@ function buildCesiumHtml(params: {
 
     function removeLayerByName(name) {
       var entry = activeLayers[name];
-      if (!entry) return;
-      viewer.imageryLayers.remove(entry.layer);
-      delete activeLayers[name];
-      layerOrder = layerOrder.filter(function(n) { return n !== name; });
-      renderStack();
+      if (entry) {
+        viewer.imageryLayers.remove(entry.layer);
+        delete activeLayers[name];
+        layerOrder = layerOrder.filter(function(n) { return n !== name; });
+        renderStack();
+      } else if (preloadCache[name]) {
+        // Also handle removing from preload cache
+        viewer.imageryLayers.remove(preloadCache[name]);
+        delete preloadCache[name];
+      }
     }
 
     function toggleVisibility(name) {
       var entry = activeLayers[name];
-      if (!entry) return;
-      entry.visible = !entry.visible;
-      entry.layer.show = entry.visible;
-      renderStack();
+      if (entry) {
+        entry.visible = !entry.visible;
+        entry.layer.show = entry.visible;
+        renderStack();
+      }
     }
 
     function addLayerFromCatalog(name) {
@@ -652,6 +733,11 @@ function buildCesiumHtml(params: {
     var activeTimeLayer = null;   // name of current Planet mosaic shown on globe
     var activeSliderType = "monthly";  // which slider is "in control"
     var playInterval = null;      // setInterval handle for animation
+
+    // --- Preload cache for smooth time-slider scrubbing ---
+    var preloadCache = {};        // name → CesiumImageryLayer (hidden preloaded layers)
+    var preloadWindowSize = 3;    // default ±3 mosaics around current position
+    var isScrubbing = false;      // true during active slider drag
 
     function toggleSub(id) {
       var listEl = document.getElementById(id);
@@ -746,6 +832,74 @@ function buildCesiumHtml(params: {
       if (type === activeSliderType) {
         document.getElementById("tcActiveDate").textContent = latestLabel;
       }
+      // Initial preload of window around latest mosaic
+      preloadWindow(type, mosaics.length - 1);
+
+      // Attach scrubbing event handlers to expand/shrink preload window
+      range.addEventListener("mousedown", function() { startScrubbing(type); });
+      range.addEventListener("touchstart", function() { startScrubbing(type); });
+      range.addEventListener("mouseup", function() { endScrubbing(type); });
+      range.addEventListener("touchend", function() { endScrubbing(type); });
+      range.addEventListener("mouseleave", function() { endScrubbing(type); });
+    }
+
+    function startScrubbing(type) {
+      isScrubbing = true;
+      preloadWindowSize = 5;  // expand to ±5 during active scrubbing
+      var range = document.getElementById("tc-range-" + type);
+      preloadWindow(type, parseInt(range.value, 10));
+    }
+
+    function endScrubbing(type) {
+      isScrubbing = false;
+      preloadWindowSize = 3;  // shrink back to ±3
+      var range = document.getElementById("tc-range-" + type);
+      preloadWindow(type, parseInt(range.value, 10));
+    }
+
+    // Preload a sliding window of mosaics as hidden Cesium imagery layers
+    function preloadWindow(type, centerIdx) {
+      var mosaics = planetMosaics[type];
+      if (!mosaics || !mosaics.length) return;
+
+      var halfWindow = Math.floor(preloadWindowSize / 2);
+      var startIdx = Math.max(0, centerIdx - halfWindow);
+      var endIdx = Math.min(mosaics.length - 1, centerIdx + halfWindow);
+
+      // Ensure basemap entries exist for all mosaics in window
+      for (var i = startIdx; i <= endIdx; i++) {
+        var name = mosaics[i];
+        if (!BASEMAPS[name]) {
+          BASEMAPS[name] = { url: planetTileUrl(name), maxZoom: 18, attr: "Planet Labs" };
+        }
+      }
+
+      // Add new mosaics to preload cache (hidden layers)
+      for (var i = startIdx; i <= endIdx; i++) {
+        var name = mosaics[i];
+        if (!preloadCache[name] && !activeLayers[name]) {
+          var bm = BASEMAPS[name];
+          var layer = viewer.imageryLayers.addImageryProvider(
+            new Cesium.UrlTemplateImageryProvider({ url: bm.url, maximumLevel: bm.maxZoom, credit: bm.attr })
+          );
+          layer.show = false;  // hidden preloaded layer
+          preloadCache[name] = layer;
+        }
+      }
+
+      // Remove cached layers outside the window to avoid memory bloat
+      var toRemove = [];
+      for (var cachedName in preloadCache) {
+        var idx = mosaics.indexOf(cachedName);
+        if (idx < startIdx || idx > endIdx) {
+          toRemove.push(cachedName);
+        }
+      }
+      for (var i = 0; i < toRemove.length; i++) {
+        var name = toRemove[i];
+        viewer.imageryLayers.remove(preloadCache[name]);
+        delete preloadCache[name];
+      }
     }
 
     function onSliderInput(type, val) {
@@ -761,16 +915,45 @@ function buildCesiumHtml(params: {
       if (!BASEMAPS[name]) {
         BASEMAPS[name] = { url: planetTileUrl(name), maxZoom: 18, attr: "Planet Labs" };
       }
-      // Swap active time layer — add new FIRST so tiles start loading before old is removed
+
       var prevLayer = activeTimeLayer;
-      if (!activeLayers[name]) {
+
+      // If target is in preload cache, show it instantly (no tile loading delay)
+      if (preloadCache[name]) {
+        var preloadedLayer = preloadCache[name];
+        preloadedLayer.show = true;
+        // Move from preload cache to active layers
+        delete preloadCache[name];
+        activeLayers[name] = { layer: preloadedLayer, visible: true };
+        layerOrder.push(name);
+      } else if (!activeLayers[name]) {
+        // Not preloaded, add normally (fallback)
         addLayer(name);
       }
+
       activeTimeLayer = name;
+
+      // Hide the previous layer's preload or active layer
       if (prevLayer && prevLayer !== name) {
-        // Delay removal so new tiles load before old layer disappears
-        setTimeout(function() { removeLayerByName(prevLayer); }, 800);
+        if (activeLayers[prevLayer]) {
+          // Hide but keep in active layers for UI
+          activeLayers[prevLayer].layer.show = false;
+          activeLayers[prevLayer].visible = false;
+          // Move back to preload cache
+          preloadCache[prevLayer] = activeLayers[prevLayer].layer;
+          delete activeLayers[prevLayer];
+          layerOrder = layerOrder.filter(function(n) { return n !== prevLayer; });
+        } else if (preloadCache[prevLayer]) {
+          // Already in preload cache, just ensure it's hidden
+          preloadCache[prevLayer].show = false;
+        }
       }
+
+      // Advance the preload window for the new position
+      preloadWindow(type, idx);
+
+      // Update UI
+      renderStack();
     }
 
     // Preserve old name for any callers in initial mosaic setup
@@ -809,6 +992,20 @@ function buildCesiumHtml(params: {
       baseLayer: false,
     });
 
+    // --- GPU performance: M3 Max Metal, send it ---
+    viewer.scene.requestRenderMode = false;
+    viewer.scene.maximumRenderTimeChange = 0;
+    viewer.scene.globe.maximumScreenSpaceError = 2; // default — prevents tile-edge tearing artifacts
+    viewer.scene.globe.tileCacheSize = 2000; // 2k tile cache in VRAM
+    viewer.scene.globe.preloadSiblings = true;
+    viewer.scene.globe.preloadAncestors = true;
+    viewer.scene.globe.loadingDescendantLimit = 20; // aggressive tile loading
+    viewer.scene.fxaa = true;
+    viewer.resolutionScale = window.devicePixelRatio || 1;
+    viewer.scene.globe.depthTestAgainstTerrain = true;
+    viewer.scene.globe.showSkirts = true; // skirts hide the gap between terrain tiles
+    viewer.scene.globe.backFaceCulling = true;
+
     // Initial layers
     addLayer("Esri Ocean");
     ${params.tileUrl && params.tileAttribution.includes("Planet") ? `
@@ -830,38 +1027,65 @@ function buildCesiumHtml(params: {
     // Terrain exaggeration
     viewer.scene.verticalExaggeration = ${params.terrain_exaggeration};
 
-    // Lighting — disable sun lighting to prevent washed-out oceans
-    viewer.scene.globe.enableLighting = false;
+    // --- Atmosphere rendering ---
+    // Sun lighting + dynamic atmosphere
+    viewer.scene.globe.enableLighting = true;
+    viewer.scene.globe.dynamicAtmosphereLighting = true;
+    viewer.scene.globe.dynamicAtmosphereLightingFromSun = true;
+
+    // Sky atmosphere — no hue shift, let Cesium's natural Rayleigh scattering do the work
     viewer.scene.skyAtmosphere.show = true;
-    viewer.scene.skyAtmosphere.brightnessShift = -0.15;
-    viewer.scene.skyAtmosphere.saturationShift = 0.1;
+    viewer.scene.skyAtmosphere.brightnessShift = 0.0;
+    viewer.scene.skyAtmosphere.hueShift = 0.0;
+    viewer.scene.skyAtmosphere.saturationShift = 0.0;
 
-    // Ground atmosphere — haze at the horizon / limb of the globe
+    // Ground atmosphere — subtle, no color tinting
     viewer.scene.globe.showGroundAtmosphere = true;
-    viewer.scene.globe.atmosphereBrightnessShift = -0.2;
-    viewer.scene.globe.atmosphereSaturationShift = 0.15;
+    viewer.scene.globe.atmosphereBrightnessShift = 0.0;
+    viewer.scene.globe.atmosphereHueShift = 0.0;
+    viewer.scene.globe.atmosphereSaturationShift = 0.0;
 
-    // Fog — fades distant tiles toward atmosphere color at globe scale
+    // Fog — light haze for depth
     viewer.scene.fog.enabled = true;
-    viewer.scene.fog.density = 0.0002;
+    viewer.scene.fog.density = 0.00025;
+    viewer.scene.fog.minimumBrightness = 0.02;
+
+    // Shadows — high-res map, short range to avoid cascade banding at horizon
+    viewer.shadows = true;
+    viewer.shadowMap.softShadows = true;
+    viewer.shadowMap.darkness = 0.6;
+    viewer.shadowMap.size = 4096;
+    viewer.shadowMap.maximumDistance = 5000; // only shadow nearby terrain, not the whole horizon
+
+    // Anti-aliasing
+    viewer.scene.msaaSamples = 4;
+
+    // Ambient occlusion — subtle depth in valleys, low intensity to avoid distance artifacts
+    viewer.scene.postProcessStages.ambientOcclusion.enabled = true;
+    viewer.scene.postProcessStages.ambientOcclusion.uniforms.intensity = 1.2;
+    viewer.scene.postProcessStages.ambientOcclusion.uniforms.bias = 0.15;
+    viewer.scene.postProcessStages.ambientOcclusion.uniforms.lengthCap = 0.02;
+    viewer.scene.postProcessStages.ambientOcclusion.uniforms.stepSize = 2.0;
+
+    viewer.scene.highDynamicRange = false;
 
     // Darken the ocean base layer slightly
     var oceanEntry = activeLayers["Esri Ocean"];
-    if (oceanEntry) { oceanEntry.layer.brightness = 0.8; oceanEntry.layer.contrast = 1.15; }
+    if (oceanEntry) { oceanEntry.layer.brightness = 0.85; oceanEntry.layer.contrast = 1.1; }
 
-    // Background
-    viewer.scene.backgroundColor = Cesium.Color.fromCssColorString("${bg}");
+    // Background — deep space
+    viewer.scene.backgroundColor = Cesium.Color.fromCssColorString("#000004");
 
-    // Initial camera
-    var INIT_LAT = ${params.latitude};
-    var INIT_LNG = ${params.longitude};
-    var INIT_ALT = ${params.altitude};
+    // Initial camera — globe view
+    var INIT_LAT = ${params.latitude || 30};
+    var INIT_LNG = ${params.longitude || 0};
+    var INIT_ALT = ${params.altitude || 20000000};
 
     viewer.camera.flyTo({
       destination: Cesium.Cartesian3.fromDegrees(INIT_LNG, INIT_LAT, INIT_ALT),
       orientation: {
         heading: 0,
-        pitch: Cesium.Math.toRadians(-90),
+        pitch: Cesium.Math.toRadians(INIT_ALT > 1000000 ? -90 : -30),
         roll: 0,
       },
       duration: 0,
@@ -932,10 +1156,15 @@ function buildCesiumHtml(params: {
       else label = Math.round(mult) + "x";
       document.getElementById("speedLabel").textContent = label;
     }
-    setSpinSpeed(33); // init to ~1x
+    setSpinSpeed(45); // init to ~2.5x
     function spinGlobe() {
       if (!rotating) return;
-      viewer.scene.camera.rotate(Cesium.Cartesian3.UNIT_Z, -spinSpeed);
+      var cam = viewer.scene.camera;
+      // Altitude-adaptive speed: scale down when close to ground so it stays smooth
+      var alt = cam.positionCartographic ? cam.positionCartographic.height : 20000000;
+      var altFactor = Math.max(0.002, Math.min(1.0, alt / 20000000)); // 0.002 at ground, 1.0 at full globe
+      var effectiveSpeed = spinSpeed * altFactor;
+      cam.rotate(cam.right, effectiveSpeed);
       requestAnimationFrame(spinGlobe);
     }
     if (rotating) spinGlobe();
@@ -966,6 +1195,82 @@ function buildCesiumHtml(params: {
       });
     }
 
+    // Scenic flyby locations
+    var flybySpots = [
+      { name: "Himalayas", lng: 86.925, lat: 27.988, alt: 12000, heading: 200, pitch: -8 },
+      { name: "Grand Canyon", lng: -112.1, lat: 36.1, alt: 8000, heading: 280, pitch: -10 },
+      { name: "Patagonia", lng: -73.0, lat: -50.3, alt: 10000, heading: 350, pitch: -8 },
+      { name: "Swiss Alps", lng: 7.66, lat: 46.0, alt: 10000, heading: 120, pitch: -8 },
+      { name: "Norwegian Fjords", lng: 7.1, lat: 62.1, alt: 8000, heading: 45, pitch: -10 },
+      { name: "Dolomites", lng: 11.84, lat: 46.41, alt: 9000, heading: 170, pitch: -8 },
+      { name: "Karakoram", lng: 76.5, lat: 35.88, alt: 14000, heading: 310, pitch: -6 },
+      { name: "Yosemite", lng: -119.59, lat: 37.74, alt: 8000, heading: 60, pitch: -10 },
+      { name: "Iceland Highlands", lng: -19.0, lat: 64.5, alt: 8000, heading: 180, pitch: -8 },
+      { name: "New Zealand Alps", lng: 170.14, lat: -43.6, alt: 10000, heading: 240, pitch: -8 },
+      { name: "Denali", lng: -151.0, lat: 63.07, alt: 12000, heading: 160, pitch: -7 },
+      { name: "Andes", lng: -69.9, lat: -32.65, alt: 12000, heading: 350, pitch: -6 },
+    ];
+    var flybyIdx = 0;
+
+    function flybyView() {
+      var spot = flybySpots[flybyIdx % flybySpots.length];
+      flybyIdx++;
+
+      // Stop any existing spin
+      rotating = false;
+      document.getElementById("btn-rotate").classList.remove("active");
+
+      // Set clock to sunrise at this location
+      var utcHourOffset = spot.lng / 15;
+      var now = new Date();
+      // Sun below horizon — nautical twilight, sky glows but sun hasn't crested yet
+      var sunrise = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 5 - Math.round(utcHourOffset), 30, 0));
+      viewer.clock.currentTime = Cesium.JulianDate.fromDate(sunrise);
+      // Let the clock run — sun moves across the sky in real time
+      viewer.clock.shouldAnimate = true;
+      viewer.clock.multiplier = 15; // 1 real second = 15 sec of sun movement — slow golden hour
+
+      // Ensure sun + shadows on
+      viewer.scene.globe.enableLighting = true;
+      viewer.shadows = true;
+      document.getElementById("btn-sun").classList.add("active");
+      sunOn = true;
+
+      // Face roughly east to watch sunrise — override spot heading
+      // East = 90°, but offset slightly so terrain is in view too
+      var sunriseHeading = 75;
+
+      // Teleport above target (no Earth-tunneling)
+      viewer.camera.setView({
+        destination: Cesium.Cartesian3.fromDegrees(spot.lng, spot.lat, 80000),
+        orientation: {
+          heading: Cesium.Math.toRadians(sunriseHeading),
+          pitch: Cesium.Math.toRadians(-50),
+          roll: 0,
+        },
+      });
+
+      // Fly down to helicopter level
+      viewer.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(spot.lng, spot.lat, spot.alt),
+        orientation: {
+          heading: Cesium.Math.toRadians(sunriseHeading),
+          pitch: Cesium.Math.toRadians(-8), // slight down tilt — avoids terrain LOD artifacts at horizon
+          roll: 0,
+        },
+        duration: 0.6,
+        easingFunction: Cesium.EasingFunction.CUBIC_OUT,
+        complete: function() {
+          // Start slow forward spin — slightly slower than sun, so sunrise lingers
+          spinSpeed = 0.0003;
+          rotating = true;
+          document.getElementById("btn-rotate").classList.add("active");
+          document.getElementById("spinSpeedCtrl").style.display = "";
+          spinGlobe();
+        },
+      });
+    }
+
     var terrainOn = true;
     function toggleTerrain() {
       terrainOn = !terrainOn;
@@ -974,6 +1279,14 @@ function buildCesiumHtml(params: {
       } else {
         viewer.scene.setTerrain(new Cesium.Terrain(Cesium.EllipsoidTerrainProvider.fromUrl()));
       }
+    }
+
+    var sunOn = true;
+    function toggleSun() {
+      sunOn = !sunOn;
+      viewer.scene.globe.enableLighting = sunOn;
+      viewer.shadows = sunOn;
+      document.getElementById("btn-sun").classList.toggle("active", sunOn);
     }
 
     // Track cursor position on globe
