@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "geo-renderer": {
+      "command": "node",
+      "args": ["/Users/jakegearon/projects/topos/packages/geo-renderer/dist/index.js"]
+    }
+  }
+}

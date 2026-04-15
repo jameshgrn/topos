@@ -14,11 +14,11 @@ llm_api_key_env = "FIREWORKS_API_KEY"
 # refresh the architectural baseline for this repo.
 
 test_cmd = "npx vitest run {test_dir}"
-lint_cmd = "npx eslint {file}"
-format_cmd = "npx prettier --write {file}"
-lint_fix_cmd = "npx eslint --fix {file}"
-format_check_cmd = "npx prettier --check {file}"
-# type_check_cmd = ""  # Optional: e.g. 'uv run ty check' for Python
+lint_cmd = "cd packages/geo-renderer && npm install --ignore-scripts 2>/dev/null && npx tsc --noEmit"
+format_cmd = ""
+lint_fix_cmd = ""
+format_check_cmd = ""
+type_check_cmd = "cd packages/geo-renderer && npx tsc --noEmit"
 
 # Settlement timeout in seconds
 settlement_timeout = 120
@@ -44,7 +44,7 @@ require_uv_run = false
 # touch these (e.g. `uv run` refreshing uv.lock) without failing review.
 # Auto-seeded by `dgov init` from detected managed files plus Python's uv.lock default.
 # Exact paths only — no globs.
-ignore_files = []
+ignore_files = ["packages/geo-renderer/package-lock.json"]
 
 [conventions]
 # Add project-specific rules here for the agent to follow

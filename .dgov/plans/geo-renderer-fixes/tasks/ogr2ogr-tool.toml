@@ -1,0 +1,28 @@
+[tasks.add]
+summary = "Add ogr2ogr vector conversion MCP tool"
+prompt = """
+Orient:
+- Read packages/geo-renderer/src/tools/gdal-inspect.ts — has runGdal() helper, gdal_inspect and gdal_convert tools.
+- Read packages/geo-renderer/src/index.ts — tool registration entry point.
+- We need a vector conversion tool wrapping ogr2ogr.
+
+Edit:
+1. Create packages/geo-renderer/src/tools/ogr2ogr.ts with a new tool `ogr2ogr_convert`:
+   - Params: input_path (string), output_path (string), output_format (enum: "GeoJSON", "GPKG", "FlatGeobuf", "Shapefile", "CSV", "Parquet", default "GeoJSON"), target_crs (optional string, e.g. "EPSG:4326"), sql_filter (optional string — raw SQL passed via -sql), where_clause (optional string — passed via -where), clip_source (optional string — vector file for -clipsrc).
+   - Build ogr2ogr args from params. Use -f for format (map "Shapefile" to "ESRI Shapefile", "Parquet" to "Parquet").
+   - After conversion, run ogrinfo -so on output to verify and return the summary.
+   - Reuse the runGdal helper by importing it. Move runGdal to a shared utils file if needed, or just import from gdal-inspect.
+
+2. Register the new tool in packages/geo-renderer/src/index.ts.
+
+Verify:
+- `cd packages/geo-renderer && npx tsc --noEmit` passes.
+- `cd packages/geo-renderer && npx vitest run` passes.
+"""
+commit_message = "add ogr2ogr vector conversion MCP tool"
+files.create = ["packages/geo-renderer/src/tools/ogr2ogr.ts"]
+files.edit = [
+  "packages/geo-renderer/src/index.ts",
+  "packages/geo-renderer/src/tools/gdal-inspect.ts",
+]
+files.read = ["packages/geo-renderer/package.json"]

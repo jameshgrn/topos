@@ -1,0 +1,4 @@
+[plan]
+name = "geo-renderer-fixes"
+summary = "Fix review findings: fetch error handling, country name lookup, ogr2ogr tool, MCP wiring"
+sections = ["tasks"]

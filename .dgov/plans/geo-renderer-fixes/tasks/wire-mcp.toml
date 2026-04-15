@@ -1,0 +1,32 @@
+[tasks.add]
+summary = "Add MCP config example and npm bin entry for easy wiring"
+prompt = """
+Orient:
+- Read packages/geo-renderer/package.json — current config.
+- Read packages/geo-renderer/src/index.ts — entry point.
+- Users need to add geo-renderer to ~/.mcp.json to use it. We should make this easy.
+
+Edit:
+1. Add a "bin" field to packages/geo-renderer/package.json: "geo-renderer": "dist/index.js"
+2. Add a shebang line (#!/usr/bin/env node) to the top of packages/geo-renderer/src/index.ts.
+3. Create packages/geo-renderer/mcp.example.json showing the exact config to add to ~/.mcp.json:
+   {
+     "mcpServers": {
+       "geo-renderer": {
+         "command": "node",
+         "args": ["/path/to/topos/packages/geo-renderer/dist/index.js"]
+       }
+     }
+   }
+
+Verify:
+- `cd packages/geo-renderer && npx tsc --noEmit` passes.
+- `cd packages/geo-renderer && npm run build` succeeds.
+"""
+depends_on = ["tasks/ogr2ogr-tool.add"]
+commit_message = "add bin entry and MCP config example"
+files.edit = [
+  "packages/geo-renderer/package.json",
+  "packages/geo-renderer/src/index.ts",
+]
+files.create = ["packages/geo-renderer/mcp.example.json"]

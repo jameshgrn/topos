@@ -1,0 +1,22 @@
+[tasks.fix]
+summary = "Add fetch error handling, country name lookup, and cleanup to locator-globe"
+prompt = """
+Orient:
+- Read packages/geo-renderer/src/tools/locator-globe.ts — the locator globe MCP tool.
+- Three issues to fix:
+  1. loadWorld() has no error handling — if CDN is down, it fails silently.
+  2. highlight_country_id only accepts ISO 3166-1 numeric codes (e.g. "776" for Tonga). Users want to pass names like "Tonga" or ISO alpha-3 like "TON".
+  3. Line 12 has an eslint-disable comment but we don't use eslint.
+
+Edit:
+1. In loadWorld(), wrap fetch in try/catch. On failure, throw with message: "Failed to load world atlas data — check network connection" including the original error message.
+2. Add a COUNTRY_LOOKUP map (object literal) that maps common country names and ISO alpha-2/alpha-3 codes to ISO 3166-1 numeric codes. Cover at least: the ~50 most common countries plus all Pacific island nations. Add a new optional param `highlight_country` (string) that accepts a country name, alpha-2, or alpha-3 code. Keep `highlight_country_id` for backward compat. If both are provided, `highlight_country_id` wins. The lookup should be case-insensitive.
+3. Remove the eslint-disable comment on line 12.
+
+Verify:
+- `cd packages/geo-renderer && npx tsc --noEmit` passes.
+- `cd packages/geo-renderer && npx vitest run` passes.
+"""
+commit_message = "add fetch error handling and country name lookup to locator globe"
+files.edit = ["packages/geo-renderer/src/tools/locator-globe.ts"]
+files.read = ["packages/geo-renderer/test/globe.test.ts"]

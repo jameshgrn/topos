@@ -1,6 +1,6 @@
 [plan]
 name = "scaffold-complete"
-source_mtime_max = "2026-04-15T17:29:26.738697Z"
+source_mtime_max = "2026-04-15T17:31:03.711712Z"
 sop_set_hash = ""
 
 [tasks."tasks/claude-md.write"]
@@ -111,5 +111,5 @@ Verify:
 """
 commit_message = "add vitest and locator globe smoke test"
 files.create = ["packages/geo-renderer/vitest.config.ts", "packages/geo-renderer/test/globe.test.ts"]
-files.edit = ["packages/geo-renderer/package.json"]
+files.edit = ["packages/geo-renderer/package.json", "packages/geo-renderer/package-lock.json"]
 files.read = ["packages/geo-renderer/tsconfig.json", "packages/geo-renderer/src/tools/locator-globe.ts"]

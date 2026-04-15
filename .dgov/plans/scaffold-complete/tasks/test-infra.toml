@@ -25,7 +25,7 @@ files.create = [
   "packages/geo-renderer/vitest.config.ts",
   "packages/geo-renderer/test/globe.test.ts",
 ]
-files.edit = ["packages/geo-renderer/package.json"]
+files.edit = ["packages/geo-renderer/package.json", "packages/geo-renderer/package-lock.json"]
 files.read = [
   "packages/geo-renderer/tsconfig.json",
   "packages/geo-renderer/src/tools/locator-globe.ts",

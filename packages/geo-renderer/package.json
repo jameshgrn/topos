@@ -4,11 +4,15 @@
   "description": "Lightweight MCP server for geospatial rendering — D3 SVG maps, locator globes, GDAL processing",
   "type": "module",
   "main": "dist/index.js",
+  "bin": {
+    "geo-renderer": "dist/index.js"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
     "start": "node dist/index.js",
-    "lint": "eslint src/"
+    "lint": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1",
@@ -22,6 +26,7 @@
     "@types/jsdom": "^21.1.7",
     "@types/node": "^22.15.3",
     "@types/topojson-client": "^3.1.5",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^2.1.9"
   }
 }

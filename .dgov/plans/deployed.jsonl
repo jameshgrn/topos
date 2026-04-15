@@ -1,0 +1,6 @@
+{"plan":"scaffold-complete","unit":"tasks/claude-md.write","sha":"e439ae49022f3b11488f36ad3d427fbdc4176bc3","ts":"2026-04-15T17:29:57Z"}
+{"plan":"scaffold-complete","unit":"tasks/d3-references.write","sha":"8ad1e880b8ffe60988ffefc04c7ddfa5c129a11f","ts":"2026-04-15T17:30:24Z"}
+{"plan":"scaffold-complete","unit":"tasks/gdal-references.write","sha":"cdcea1d4f44624af2f031c4fa2b0c9ecf9d552c2","ts":"2026-04-15T17:30:36Z"}
+{"plan":"scaffold-complete","unit":"tasks/test-infra.write","sha":"cdcea1d4f44624af2f031c4fa2b0c9ecf9d552c2","ts":"2026-04-15T17:42:18Z"}
+{"plan":"geo-renderer-fixes","unit":"tasks/globe-hardening.fix","sha":"f8be04aca93b8aab41d8da8ca0842d8cefc6e448","ts":"2026-04-15T17:58:25Z"}
+{"plan":"geo-renderer-fixes","unit":"tasks/ogr2ogr-tool.add","sha":"717f28a453a274921ed3be39f18d885b99cf6edd","ts":"2026-04-15T17:58:29Z"}
