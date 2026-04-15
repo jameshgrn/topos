@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { registerLocatorGlobe } from "./tools/locator-globe.js";
 import { registerGdalInspect } from "./tools/gdal-inspect.js";
+import { registerOgr2ogr } from "./tools/ogr2ogr.js";
 
 const server = new McpServer({
   name: "geo-renderer",
@@ -10,6 +11,7 @@ const server = new McpServer({
 
 registerLocatorGlobe(server);
 registerGdalInspect(server);
+registerOgr2ogr(server);
 
 async function main() {
   const transport = new StdioServerTransport();

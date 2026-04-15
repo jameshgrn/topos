@@ -5,7 +5,7 @@ import { promisify } from "util";
 
 const execFileAsync = promisify(execFile);
 
-async function runGdal(
+export async function runGdal(
   cmd: string,
   args: string[],
 ): Promise<{ stdout: string; stderr: string }> {
