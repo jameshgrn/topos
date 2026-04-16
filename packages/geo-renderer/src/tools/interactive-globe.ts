@@ -187,7 +187,7 @@ function buildCesiumHtml(params: {
     }
     /* ── Layer panel ── */
     .layer-panel {
-      position: fixed; top: 0; right: 0; bottom: 0; width: 300px;
+      position: fixed; top: 0; right: 0; bottom: 0; width: 320px;
       background: ${params.dark_mode
         ? "linear-gradient(160deg, rgba(12,14,26,0.97) 0%, rgba(8,10,20,0.97) 100%)"
         : "linear-gradient(160deg, rgba(252,253,255,0.98) 0%, rgba(244,246,252,0.98) 100%)"};
@@ -479,7 +479,6 @@ function buildCesiumHtml(params: {
       <div class="lp-section-head" style="padding-top:6px">Satellite / Imagery</div>
       <div class="lp-cat-item" onclick="addLayerFromCatalog('Esri World Imagery')"><span class="plus">+</span> Esri World Imagery</div>
       <div class="lp-cat-item" onclick="addLayerFromCatalog('USGS Imagery')"><span class="plus">+</span> USGS Imagery</div>
-      <div class="lp-cat-item" onclick="addLayerFromCatalog('swisstopo SWISSIMAGE')"><span class="plus">+</span> swisstopo SWISSIMAGE</div>
       <div class="lp-section-head">Earth Science / Geology</div>
       <div class="lp-cat-item" onclick="addLayerFromCatalog('Macrostrat Geology')"><span class="plus">+</span> Macrostrat Geology</div>
       <div class="lp-cat-item" onclick="addLayerFromCatalog('Macrostrat Geology (emphasized)')"><span class="plus">+</span> Macrostrat Geology (slim)</div>
@@ -492,23 +491,9 @@ function buildCesiumHtml(params: {
       <div class="lp-cat-item" onclick="addLayerFromCatalog('Esri Shaded Relief')"><span class="plus">+</span> Esri Shaded Relief</div>
       <div class="lp-cat-item" onclick="addLayerFromCatalog('OpenTopoMap')"><span class="plus">+</span> OpenTopoMap</div>
       <div class="lp-cat-item" onclick="addLayerFromCatalog('Esri World Topo')"><span class="plus">+</span> Esri World Topo</div>
-      <div class="lp-section-head">Transport / Infrastructure</div>
-      <div class="lp-cat-item" onclick="addLayerFromCatalog('OpenRailwayMap')"><span class="plus">+</span> OpenRailwayMap</div>
-      <div class="lp-cat-item" onclick="addLayerFromCatalog('Rail Signals')"><span class="plus">+</span> Rail Signals</div>
-      <div class="lp-cat-item" onclick="addLayerFromCatalog('Rail Electrification')"><span class="plus">+</span> Rail Electrification</div>
-      <div class="lp-cat-item" onclick="addLayerFromCatalog('Rail Speed')"><span class="plus">+</span> Rail Speed</div>
-      <div class="lp-cat-item" onclick="addLayerFromCatalog('CyclOSM')"><span class="plus">+</span> CyclOSM</div>
-      <div class="lp-cat-item" onclick="addLayerFromCatalog('CyclOSM Lite')"><span class="plus">+</span> CyclOSM Lite (overlay)</div>
-      <div class="lp-cat-item" onclick="addLayerFromCatalog('Public Transit')"><span class="plus">+</span> Public Transit</div>
-      <div class="lp-section-head">Trails / Recreation</div>
-      <div class="lp-cat-item" onclick="addLayerFromCatalog('Waymarked Hiking')"><span class="plus">+</span> Waymarked Hiking</div>
-      <div class="lp-cat-item" onclick="addLayerFromCatalog('Waymarked Cycling')"><span class="plus">+</span> Waymarked Cycling</div>
-      <div class="lp-cat-item" onclick="addLayerFromCatalog('Waymarked MTB')"><span class="plus">+</span> Waymarked MTB</div>
-      <div class="lp-cat-item" onclick="addLayerFromCatalog('Waymarked Slopes')"><span class="plus">+</span> Waymarked Slopes</div>
-      <div class="lp-section-head">National Agencies</div>
-      <div class="lp-cat-item" onclick="addLayerFromCatalog('TopPlusOpen (DE)')"><span class="plus">+</span> TopPlusOpen Germany</div>
-      <div class="lp-cat-item" onclick="addLayerFromCatalog('TopPlusOpen Grey (DE)')"><span class="plus">+</span> TopPlusOpen Grey (DE)</div>
-      <div class="lp-cat-item" onclick="addLayerFromCatalog('swisstopo Color')"><span class="plus">+</span> swisstopo Color (CH)</div>
+      <div class="lp-section-head">US National Agencies</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('USGS Topo')"><span class="plus">+</span> USGS Topo</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('USGS Imagery+Topo')"><span class="plus">+</span> USGS Imagery + Topo</div>
       <div class="lp-section-head">Street / General</div>
       <div class="lp-cat-item" onclick="addLayerFromCatalog('OSM Standard')"><span class="plus">+</span> OSM Standard</div>
       <div class="lp-cat-item" onclick="addLayerFromCatalog('CartoDB Voyager')"><span class="plus">+</span> CartoDB Voyager</div>
@@ -525,6 +510,20 @@ function buildCesiumHtml(params: {
       <div class="lp-section-head">Artistic</div>
       <div class="lp-cat-item" onclick="addLayerFromCatalog('Stamen Toner')"><span class="plus">+</span> Stamen Toner</div>
       <div class="lp-cat-item" onclick="addLayerFromCatalog('Stamen Watercolor')"><span class="plus">+</span> Stamen Watercolor</div>
+      <div class="lp-section-head">NASA GIBS</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('NASA Black Marble')"><span class="plus">+</span> Black Marble (nightlights)</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('NASA Night (Daily ENCC)')"><span class="plus">+</span> Night (daily ENCC)</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('NASA MODIS True Color')"><span class="plus">+</span> MODIS True Color</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('NASA VIIRS True Color')"><span class="plus">+</span> VIIRS True Color</div>
+      <div class="lp-section-head">Weather (live)</div>
+      <div class="lp-cat-item" onclick="addRainViewerLayer()"><span class="plus">+</span> RainViewer Radar (live)</div>
+      ${process.env.OPENWEATHER_API_KEY ? `
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('OWM Clouds')"><span class="plus">+</span> Clouds (OWM)</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('OWM Precipitation')"><span class="plus">+</span> Precipitation (OWM)</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('OWM Temperature')"><span class="plus">+</span> Temperature (OWM)</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('OWM Wind')"><span class="plus">+</span> Wind (OWM)</div>
+      <div class="lp-cat-item" onclick="addLayerFromCatalog('OWM Pressure')"><span class="plus">+</span> Pressure (OWM)</div>
+      ` : '<div class="lp-loading">Set OPENWEATHER_API_KEY for weather</div>'}
     </div>
   </div>
   <div class="time-control-bar" id="timeControlBar">
@@ -580,24 +579,9 @@ function buildCesiumHtml(params: {
       "USGS Hydrography": { url: "https://basemap.nationalmap.gov/arcgis/rest/services/USGSHydroCached/MapServer/tile/{z}/{y}/{x}", maxZoom: 16, attr: "USGS NHD" },
       // Marine / Nautical
       "OpenSeaMap": { url: "https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png", maxZoom: 19, attr: "OpenSeaMap" },
-      // National Agencies
-      "TopPlusOpen (DE)": { url: "https://sgx.geodatenzentrum.de/wmts_topplus_open/tile/1.0.0/web/default/WEBMERCATOR/{z}/{y}/{x}.png", maxZoom: 18, attr: "BKG, dl-de/by-2-0" },
-      "TopPlusOpen Grey (DE)": { url: "https://sgx.geodatenzentrum.de/wmts_topplus_open/tile/1.0.0/web_grau/default/WEBMERCATOR/{z}/{y}/{x}.png", maxZoom: 18, attr: "BKG, dl-de/by-2-0" },
-      "swisstopo SWISSIMAGE": { url: "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swissimage/default/current/3857/{z}/{x}/{y}.jpeg", maxZoom: 19, attr: "swisstopo" },
-      "swisstopo Color": { url: "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg", maxZoom: 18, attr: "swisstopo" },
-      // Transport / Infrastructure
-      "OpenRailwayMap": { url: "https://tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png", maxZoom: 19, attr: "OpenRailwayMap, CC-BY-SA" },
-      "Rail Signals": { url: "https://tiles.openrailwaymap.org/signals/{z}/{x}/{y}.png", maxZoom: 19, attr: "OpenRailwayMap, CC-BY-SA" },
-      "Rail Electrification": { url: "https://tiles.openrailwaymap.org/electrification/{z}/{x}/{y}.png", maxZoom: 19, attr: "OpenRailwayMap, CC-BY-SA" },
-      "Rail Speed": { url: "https://tiles.openrailwaymap.org/maxspeed/{z}/{x}/{y}.png", maxZoom: 19, attr: "OpenRailwayMap, CC-BY-SA" },
-      "CyclOSM": { url: "https://a.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png", maxZoom: 20, attr: "CyclOSM, OSM" },
-      "CyclOSM Lite": { url: "https://a.tile-cyclosm.openstreetmap.fr/cyclosm-lite/{z}/{x}/{y}.png", maxZoom: 20, attr: "CyclOSM, OSM" },
-      "Public Transit": { url: "https://tileserver.memomaps.de/tilegen/{z}/{x}/{y}.png", maxZoom: 18, attr: "memomaps.de, CC-BY-SA" },
-      // Trails / Recreation
-      "Waymarked Hiking": { url: "https://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png", maxZoom: 18, attr: "waymarkedtrails.org, CC-BY-SA" },
-      "Waymarked Cycling": { url: "https://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png", maxZoom: 18, attr: "waymarkedtrails.org, CC-BY-SA" },
-      "Waymarked MTB": { url: "https://tile.waymarkedtrails.org/mtb/{z}/{x}/{y}.png", maxZoom: 18, attr: "waymarkedtrails.org, CC-BY-SA" },
-      "Waymarked Slopes": { url: "https://tile.waymarkedtrails.org/slopes/{z}/{x}/{y}.png", maxZoom: 18, attr: "waymarkedtrails.org, CC-BY-SA" },
+      // US agencies
+      "USGS Topo": { url: "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}", maxZoom: 20, attr: "USGS" },
+      "USGS Imagery+Topo": { url: "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}", maxZoom: 20, attr: "USGS" },
       // Environment / Hazards
       "SafeCast Radiation": { url: "https://s3.amazonaws.com/te512.safecast.org/{z}/{x}/{y}.png", maxZoom: 16, attr: "SafeCast, CC0" },
       // Labels-only overlays
@@ -606,7 +590,23 @@ function buildCesiumHtml(params: {
       // No-labels bases
       "CartoDB Positron No Labels": { url: "https://a.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png", maxZoom: 20, attr: "CARTO" },
       "CartoDB Dark No Labels": { url: "https://a.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png", maxZoom: 20, attr: "CARTO" },
+      // NASA GIBS — nighttime lights (WMTS: {z}/{y}/{x} order)
+      "NASA Black Marble": { url: "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/2016-01-01/GoogleMapsCompatible_Level8/{z}/{y}/{x}.png", maxZoom: 8, attr: "NASA VIIRS Black Marble" },
+      "NASA Night (Daily ENCC)": { url: "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_DayNightBand_ENCC/default/2025-01-01/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpg", maxZoom: 8, attr: "NASA VIIRS SNPP ENCC" },
+      // NASA GIBS — daytime imagery
+      "NASA MODIS True Color": { url: "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/2025-01-01/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg", maxZoom: 9, attr: "NASA MODIS Terra" },
+      "NASA VIIRS True Color": { url: "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/2025-01-01/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg", maxZoom: 9, attr: "NASA VIIRS SNPP" },
     };
+
+    // OpenWeatherMap layers (need API key)
+    var OWM_KEY = ${JSON.stringify(process.env.OPENWEATHER_API_KEY || "")};
+    if (OWM_KEY) {
+      BASEMAPS["OWM Clouds"] = { url: "https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=" + OWM_KEY, maxZoom: 12, attr: "OpenWeatherMap" };
+      BASEMAPS["OWM Precipitation"] = { url: "https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=" + OWM_KEY, maxZoom: 12, attr: "OpenWeatherMap" };
+      BASEMAPS["OWM Temperature"] = { url: "https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=" + OWM_KEY, maxZoom: 12, attr: "OpenWeatherMap" };
+      BASEMAPS["OWM Wind"] = { url: "https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=" + OWM_KEY, maxZoom: 12, attr: "OpenWeatherMap" };
+      BASEMAPS["OWM Pressure"] = { url: "https://tile.openweathermap.org/map/pressure_new/{z}/{x}/{y}.png?appid=" + OWM_KEY, maxZoom: 12, attr: "OpenWeatherMap" };
+    }
 
     // --- Layer management ---
     var activeLayers = {};  // name → { layer, visible }
@@ -982,6 +982,27 @@ function buildCesiumHtml(params: {
       }, 600);
     }
 
+    // --- RainViewer live radar ---
+    var rainViewerLayer = null;
+    function addRainViewerLayer() {
+      if (rainViewerLayer) return; // already added
+      fetch("https://api.rainviewer.com/public/weather-maps.json")
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var past = data.radar && data.radar.past;
+          if (!past || !past.length) return;
+          // Use the most recent radar frame
+          var latest = past[past.length - 1];
+          var tileUrl = data.host + latest.path + "/512/{z}/{x}/{y}/2/1_0.png";
+          BASEMAPS["RainViewer Radar"] = { url: tileUrl, maxZoom: 7, attr: "RainViewer" };
+          addLayer("RainViewer Radar");
+          // Make it semi-transparent so terrain shows through
+          var entry = activeLayers["RainViewer Radar"];
+          if (entry) entry.layer.alpha = 0.6;
+        })
+        .catch(function(e) { console.warn("RainViewer fetch failed:", e); });
+    }
+
     // --- Create viewer ---
     var viewer = new Cesium.Viewer("cesiumContainer", {
       animation: false, timeline: false, fullscreenButton: false,
@@ -1303,6 +1324,48 @@ function buildCesiumHtml(params: {
         coordsEl.classList.remove("tracking");
       }
     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+
+    // Keyboard shortcuts (Google Earth style)
+    document.addEventListener("keydown", function(e) {
+      var key = e.key.toLowerCase();
+      if (key === "n") {
+        // Reset heading to north, keep position and pitch
+        var cam = viewer.scene.camera;
+        var pos = cam.positionCartographic;
+        viewer.camera.flyTo({
+          destination: Cesium.Cartesian3.fromRadians(pos.longitude, pos.latitude, pos.height),
+          orientation: {
+            heading: 0,
+            pitch: cam.pitch,
+            roll: 0,
+          },
+          duration: 0.5,
+        });
+      } else if (key === "u") {
+        // Reset to top-down view (north up, looking straight down)
+        var cam = viewer.scene.camera;
+        var pos = cam.positionCartographic;
+        viewer.camera.flyTo({
+          destination: Cesium.Cartesian3.fromRadians(pos.longitude, pos.latitude, pos.height),
+          orientation: {
+            heading: 0,
+            pitch: Cesium.Math.toRadians(-90),
+            roll: 0,
+          },
+          duration: 0.5,
+        });
+      } else if (key === "r") {
+        // Reset view
+        resetView();
+      } else if (key === "f") {
+        // Flyby
+        flybyView();
+      } else if (key === " ") {
+        // Toggle spin
+        e.preventDefault();
+        toggleRotate();
+      }
+    });
 
     // Update provider list whenever layers change
     function updateProviderList() {
