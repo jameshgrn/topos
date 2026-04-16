@@ -100,6 +100,7 @@ function buildCesiumHtml(params: {
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>${params.title}</title>
   <script src="https://cesium.com/downloads/cesiumjs/releases/1.124/Build/Cesium/Cesium.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
   <link rel="stylesheet" href="https://cesium.com/downloads/cesiumjs/releases/1.124/Build/Cesium/Widgets/widgets.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -432,6 +433,85 @@ function buildCesiumHtml(params: {
     .layer-panel::-webkit-scrollbar { width: 6px; }
     .layer-panel::-webkit-scrollbar-track { background: transparent; }
     .layer-panel::-webkit-scrollbar-thumb { background: ${params.dark_mode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)"}; border-radius: 3px; }
+    /* Search bar */
+    .search-bar {
+      position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+      z-index: 12; display: flex; gap: 0;
+    }
+    .search-bar input {
+      width: 280px; padding: 8px 14px; font-size: 13px;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: ${params.dark_mode ? "rgba(12,14,26,0.9)" : "rgba(255,255,255,0.95)"};
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      color: ${textColor};
+      border: 1px solid ${params.dark_mode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.12)"};
+      border-radius: 8px 0 0 8px; outline: none;
+      box-shadow: ${params.dark_mode ? "0 4px 16px rgba(0,0,0,0.5)" : "0 4px 16px rgba(0,0,0,0.1)"};
+    }
+    .search-bar input::placeholder { color: ${params.dark_mode ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)"}; }
+    .search-bar button {
+      padding: 8px 14px; font-size: 13px; cursor: pointer;
+      background: ${params.dark_mode ? "rgba(80,130,255,0.25)" : "rgba(30,80,220,0.12)"};
+      color: ${params.dark_mode ? "rgba(140,180,255,1)" : "rgba(30,80,220,1)"};
+      border: 1px solid ${params.dark_mode ? "rgba(80,130,255,0.4)" : "rgba(30,80,220,0.3)"};
+      border-left: none; border-radius: 0 8px 8px 0;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    .search-bar button:hover { background: ${params.dark_mode ? "rgba(80,130,255,0.35)" : "rgba(30,80,220,0.2)"}; }
+    /* Drag-and-drop overlay */
+    .drop-overlay {
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(0,120,255,0.15); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center;
+      border: 3px dashed rgba(0,120,255,0.5);
+    }
+    .drop-overlay.active { display: flex; }
+    .drop-overlay span {
+      font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 700;
+      color: ${params.dark_mode ? "rgba(140,180,255,0.9)" : "rgba(30,80,220,0.9)"};
+    }
+    /* Bookmark panel */
+    .bookmark-list {
+      max-height: 200px; overflow-y: auto;
+      border-top: 1px solid ${params.dark_mode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.07)"};
+    }
+    .bk-item {
+      padding: 5px 12px; font-size: 12px; cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .bk-item:hover { background: ${params.dark_mode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)"}; }
+    .bk-item .bk-remove { opacity: 0.3; cursor: pointer; }
+    .bk-item .bk-remove:hover { opacity: 0.8; color: #ff5555; }
+    /* Elevation profile panel */
+    .profile-panel {
+      position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 200px;
+      background: ${params.dark_mode
+        ? "linear-gradient(160deg, rgba(12,14,26,0.95) 0%, rgba(8,10,20,0.95) 100%)"
+        : "linear-gradient(160deg, rgba(252,253,255,0.97) 0%, rgba(244,246,252,0.97) 100%)"};
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border: 1px solid ${params.dark_mode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.1)"};
+      border-radius: 12px;
+      box-shadow: ${params.dark_mode ? "0 16px 40px rgba(0,0,0,0.6)" : "0 16px 40px rgba(0,0,20,0.1)"};
+      z-index: 15; display: none; padding: 12px 16px 8px;
+      color: ${textColor};
+    }
+    .profile-panel.visible { display: block; }
+    .profile-header {
+      display: flex; justify-content: space-between; align-items: center;
+      font-family: 'DM Mono', 'SF Mono', monospace; font-size: 10px;
+      letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px;
+      color: ${params.dark_mode ? "rgba(160,175,210,0.6)" : "rgba(40,50,80,0.5)"};
+    }
+    .profile-header .profile-close { cursor: pointer; font-size: 16px; opacity: 0.5; }
+    .profile-header .profile-close:hover { opacity: 1; }
+    .profile-header .profile-stats { font-size: 11px; letter-spacing: 0; text-transform: none; opacity: 0.7; }
+    .profile-svg text { fill: ${textColor}; font-family: 'DM Mono', 'SF Mono', monospace; }
+    .profile-svg .axis line, .profile-svg .axis path { stroke: ${params.dark_mode ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.15)"}; }
+    .profile-svg .grid line { stroke: ${params.dark_mode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)"}; }
+    .profile-svg .area { fill: ${params.dark_mode ? "rgba(80,130,255,0.15)" : "rgba(30,80,220,0.1)"}; }
+    .profile-svg .line { fill: none; stroke: ${params.dark_mode ? "rgba(80,130,255,0.8)" : "rgba(30,80,220,0.7)"}; stroke-width: 2; }
+    .measure-active { background: rgba(255,80,80,0.3) !important; border-color: rgba(255,80,80,0.5) !important; color: #ff8888 !important; }
     /* Hide Cesium default UI chrome */
     .cesium-viewer-toolbar,
     .cesium-viewer-animationContainer,
@@ -444,6 +524,11 @@ function buildCesiumHtml(params: {
 </head>
 <body>
   <div id="cesiumContainer"></div>
+  <div class="drop-overlay" id="dropOverlay"><span>Drop GeoJSON here</span></div>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search a place... (S)" onkeydown="if(event.key==='Enter')doSearch()" />
+    <button onclick="doSearch()">Go</button>
+  </div>
   <div class="info-panel">
     <div class="info-title">${params.label || params.title || "Gearon's Globe Emporium"}</div>
     <div class="info-coords" id="coords">${params.latitude.toFixed(4)}, ${params.longitude.toFixed(4)}</div>
@@ -459,6 +544,9 @@ function buildCesiumHtml(params: {
     <button onclick="resetView()">Reset</button>
     <button onclick="toggleTerrain()">Terrain</button>
     <button id="btn-sun" class="active" onclick="toggleSun()">&#9728; Sun</button>
+    <button id="btn-bldg" onclick="toggleBuildings()">Buildings</button>
+    <button onclick="saveBookmark()">&#9733; Save</button>
+    <button id="btn-measure" onclick="toggleMeasure()">Measure</button>
   </div>
   <button class="lp-toggle" id="lpToggleBtn" onclick="togglePanel()">&#9776;&ensp;Layers</button>
   <div class="layer-panel" id="layerPanel">
@@ -524,7 +612,17 @@ function buildCesiumHtml(params: {
       <div class="lp-cat-item" onclick="addLayerFromCatalog('OWM Wind')"><span class="plus">+</span> Wind (OWM)</div>
       <div class="lp-cat-item" onclick="addLayerFromCatalog('OWM Pressure')"><span class="plus">+</span> Pressure (OWM)</div>
       ` : '<div class="lp-loading">Set OPENWEATHER_API_KEY for weather</div>'}
+      <div class="lp-section-head">Bookmarks</div>
+      <div class="bookmark-list" id="bookmarkList"></div>
     </div>
+  </div>
+  <div class="profile-panel" id="profilePanel">
+    <div class="profile-header">
+      <span>Elevation Profile</span>
+      <span class="profile-stats" id="profileStats"></span>
+      <span class="profile-close" onclick="closeProfile()">&times;</span>
+    </div>
+    <svg class="profile-svg" id="profileSvg" width="568" height="150"></svg>
   </div>
   <div class="time-control-bar" id="timeControlBar">
     <div class="tc-headline">
@@ -1361,11 +1459,288 @@ function buildCesiumHtml(params: {
         // Flyby
         flybyView();
       } else if (key === " ") {
-        // Toggle spin
         e.preventDefault();
         toggleRotate();
+      } else if (key === "s" && document.activeElement.tagName !== "INPUT") {
+        e.preventDefault();
+        document.getElementById("searchInput").focus();
       }
     });
+
+    // --- Search / Geocode (Nominatim, free, no key) ---
+    function doSearch() {
+      var q = document.getElementById("searchInput").value.trim();
+      if (!q) return;
+      fetch("https://nominatim.openstreetmap.org/search?format=json&limit=1&q=" + encodeURIComponent(q))
+        .then(function(r) { return r.json(); })
+        .then(function(results) {
+          if (!results.length) return;
+          var r = results[0];
+          var lat = parseFloat(r.lat), lng = parseFloat(r.lon);
+          // Determine altitude from bounding box size
+          var alt = 50000;
+          if (r.boundingbox) {
+            var dlat = Math.abs(parseFloat(r.boundingbox[1]) - parseFloat(r.boundingbox[0]));
+            var dlng = Math.abs(parseFloat(r.boundingbox[3]) - parseFloat(r.boundingbox[2]));
+            var span = Math.max(dlat, dlng);
+            alt = Math.max(500, Math.min(5000000, span * 111000 * 1.5));
+          }
+          viewer.camera.flyTo({
+            destination: Cesium.Cartesian3.fromDegrees(lng, lat, alt),
+            orientation: { heading: 0, pitch: Cesium.Math.toRadians(-45), roll: 0 },
+            duration: 1.5,
+          });
+          document.getElementById("searchInput").value = r.display_name.split(",")[0];
+          document.getElementById("searchInput").blur();
+        });
+    }
+
+    // --- GeoJSON Drag and Drop ---
+    var dropOverlay = document.getElementById("dropOverlay");
+    var dragCounter = 0;
+    document.addEventListener("dragenter", function(e) {
+      e.preventDefault();
+      dragCounter++;
+      dropOverlay.classList.add("active");
+    });
+    document.addEventListener("dragleave", function(e) {
+      e.preventDefault();
+      dragCounter--;
+      if (dragCounter <= 0) { dragCounter = 0; dropOverlay.classList.remove("active"); }
+    });
+    document.addEventListener("dragover", function(e) { e.preventDefault(); });
+    document.addEventListener("drop", function(e) {
+      e.preventDefault();
+      dragCounter = 0;
+      dropOverlay.classList.remove("active");
+      var files = e.dataTransfer.files;
+      for (var i = 0; i < files.length; i++) {
+        (function(file) {
+          var reader = new FileReader();
+          reader.onload = function(ev) {
+            try {
+              var geojson = JSON.parse(ev.target.result);
+              var ds = Cesium.GeoJsonDataSource.load(geojson, {
+                stroke: Cesium.Color.fromCssColorString("#ff4444"),
+                fill: Cesium.Color.fromCssColorString("#ff4444").withAlpha(0.3),
+                strokeWidth: 2,
+                clampToGround: true,
+              });
+              viewer.dataSources.add(ds);
+              ds.then(function(loaded) { viewer.flyTo(loaded, { duration: 1.5 }); });
+            } catch (err) { console.warn("Failed to parse GeoJSON:", err); }
+          };
+          reader.readAsText(file);
+        })(files[i]);
+      }
+    });
+
+    // --- 3D Buildings (Cesium OSM Buildings via ion) ---
+    var buildingsLayer = null;
+    function toggleBuildings() {
+      if (buildingsLayer) {
+        viewer.scene.primitives.remove(buildingsLayer);
+        buildingsLayer = null;
+        document.getElementById("btn-bldg").classList.remove("active");
+      } else {
+        Cesium.createOsmBuildingsAsync().then(function(tileset) {
+          buildingsLayer = viewer.scene.primitives.add(tileset);
+          document.getElementById("btn-bldg").classList.add("active");
+        });
+      }
+    }
+
+    // --- Bookmarks (saved to localStorage) ---
+    var BOOKMARK_KEY = "globe-emporium-bookmarks";
+    function getBookmarks() {
+      try { return JSON.parse(localStorage.getItem(BOOKMARK_KEY) || "[]"); } catch(e) { return []; }
+    }
+    function saveBookmark() {
+      var cam = viewer.scene.camera;
+      var pos = cam.positionCartographic;
+      var name = prompt("Bookmark name:");
+      if (!name) return;
+      var bookmarks = getBookmarks();
+      bookmarks.push({
+        name: name,
+        lng: Cesium.Math.toDegrees(pos.longitude),
+        lat: Cesium.Math.toDegrees(pos.latitude),
+        alt: pos.height,
+        heading: Cesium.Math.toDegrees(cam.heading),
+        pitch: Cesium.Math.toDegrees(cam.pitch),
+        layers: layerOrder.slice(),
+        time: viewer.clock.currentTime.toString(),
+      });
+      localStorage.setItem(BOOKMARK_KEY, JSON.stringify(bookmarks));
+      renderBookmarks();
+    }
+    function loadBookmark(idx) {
+      var bookmarks = getBookmarks();
+      var bk = bookmarks[idx];
+      if (!bk) return;
+      viewer.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(bk.lng, bk.lat, bk.alt),
+        orientation: {
+          heading: Cesium.Math.toRadians(bk.heading),
+          pitch: Cesium.Math.toRadians(bk.pitch),
+          roll: 0,
+        },
+        duration: 1.5,
+      });
+    }
+    function removeBookmark(idx) {
+      var bookmarks = getBookmarks();
+      bookmarks.splice(idx, 1);
+      localStorage.setItem(BOOKMARK_KEY, JSON.stringify(bookmarks));
+      renderBookmarks();
+    }
+    function renderBookmarks() {
+      var list = document.getElementById("bookmarkList");
+      var bookmarks = getBookmarks();
+      list.innerHTML = "";
+      bookmarks.forEach(function(bk, i) {
+        var div = document.createElement("div");
+        div.className = "bk-item";
+        div.innerHTML = '<span onclick="loadBookmark(' + i + ')" style="flex:1;cursor:pointer">' + bk.name + '</span><span class="bk-remove" onclick="event.stopPropagation();removeBookmark(' + i + ')">&times;</span>';
+        list.appendChild(div);
+      });
+    }
+    renderBookmarks();
+
+    // --- Measure / Elevation Profile ---
+    var measuring = false;
+    var measurePoints = [];
+    var measureEntities = [];
+
+    function toggleMeasure() {
+      measuring = !measuring;
+      document.getElementById("btn-measure").classList.toggle("measure-active", measuring);
+      if (!measuring) {
+        clearMeasure();
+      }
+    }
+
+    function clearMeasure() {
+      measurePoints = [];
+      measureEntities.forEach(function(e) { viewer.entities.remove(e); });
+      measureEntities = [];
+    }
+
+    function closeProfile() {
+      document.getElementById("profilePanel").classList.remove("visible");
+      clearMeasure();
+      measuring = false;
+      document.getElementById("btn-measure").classList.remove("measure-active");
+    }
+
+    // Click handler for measure mode
+    handler.setInputAction(function(click) {
+      if (!measuring) return;
+      var cartesian = viewer.camera.pickEllipsoid(click.position, viewer.scene.globe.ellipsoid);
+      if (!cartesian) return;
+      var carto = Cesium.Cartographic.fromCartesian(cartesian);
+
+      // Add marker
+      var entity = viewer.entities.add({
+        position: Cesium.Cartesian3.fromRadians(carto.longitude, carto.latitude),
+        point: {
+          pixelSize: 8, color: Cesium.Color.fromCssColorString("#ff4444"),
+          outlineColor: Cesium.Color.WHITE, outlineWidth: 2,
+          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+        },
+      });
+      measureEntities.push(entity);
+      measurePoints.push(carto);
+
+      if (measurePoints.length === 2) {
+        // Draw line on globe
+        var lineEntity = viewer.entities.add({
+          polyline: {
+            positions: Cesium.Cartesian3.fromRadiansArray([
+              measurePoints[0].longitude, measurePoints[0].latitude,
+              measurePoints[1].longitude, measurePoints[1].latitude,
+            ]),
+            width: 3,
+            material: Cesium.Color.fromCssColorString("#ff4444").withAlpha(0.8),
+            clampToGround: true,
+          },
+        });
+        measureEntities.push(lineEntity);
+        // Sample elevation profile
+        sampleProfile(measurePoints[0], measurePoints[1]);
+        measuring = false;
+        document.getElementById("btn-measure").classList.remove("measure-active");
+      }
+    }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+    function sampleProfile(start, end) {
+      var numSamples = 100;
+      var positions = [];
+      for (var i = 0; i <= numSamples; i++) {
+        var t = i / numSamples;
+        var lat = start.latitude + t * (end.latitude - start.latitude);
+        var lng = start.longitude + t * (end.longitude - start.longitude);
+        positions.push(new Cesium.Cartographic(lng, lat));
+      }
+      // Calculate total distance
+      var totalDist = Cesium.Cartesian3.distance(
+        Cesium.Cartesian3.fromRadians(start.longitude, start.latitude),
+        Cesium.Cartesian3.fromRadians(end.longitude, end.latitude)
+      );
+
+      Cesium.sampleTerrainMostDetailed(viewer.terrainProvider, positions).then(function(sampled) {
+        var data = sampled.map(function(pos, i) {
+          return { dist: (i / numSamples) * totalDist / 1000, elev: pos.height || 0 };
+        });
+        renderProfile(data, totalDist);
+      });
+    }
+
+    function renderProfile(data, totalDist) {
+      var panel = document.getElementById("profilePanel");
+      panel.classList.add("visible");
+
+      var svg = d3.select("#profileSvg");
+      svg.selectAll("*").remove();
+
+      var w = 568, h = 150;
+      var margin = { top: 8, right: 12, bottom: 28, left: 50 };
+      var iw = w - margin.left - margin.right;
+      var ih = h - margin.top - margin.bottom;
+
+      var x = d3.scaleLinear().domain(d3.extent(data, function(d) { return d.dist; })).range([0, iw]);
+      var y = d3.scaleLinear().domain([d3.min(data, function(d) { return d.elev; }) * 0.95, d3.max(data, function(d) { return d.elev; }) * 1.05]).range([ih, 0]);
+
+      var g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      // Grid
+      g.append("g").attr("class", "grid").call(d3.axisLeft(y).tickSize(-iw).tickFormat("")).selectAll("line").attr("stroke-dasharray", "2,3");
+
+      // Area fill
+      g.append("path").datum(data).attr("class", "area")
+        .attr("d", d3.area().x(function(d) { return x(d.dist); }).y0(ih).y1(function(d) { return y(d.elev); }));
+
+      // Line
+      g.append("path").datum(data).attr("class", "line")
+        .attr("d", d3.line().x(function(d) { return x(d.dist); }).y(function(d) { return y(d.elev); }));
+
+      // Axes
+      g.append("g").attr("class", "axis").attr("transform", "translate(0," + ih + ")")
+        .call(d3.axisBottom(x).ticks(6).tickFormat(function(d) { return d.toFixed(0) + " km"; }))
+        .selectAll("text").attr("font-size", "9px");
+      g.append("g").attr("class", "axis")
+        .call(d3.axisLeft(y).ticks(5).tickFormat(function(d) { return d.toFixed(0) + " m"; }))
+        .selectAll("text").attr("font-size", "9px");
+
+      // Stats
+      var minElev = d3.min(data, function(d) { return d.elev; });
+      var maxElev = d3.max(data, function(d) { return d.elev; });
+      var gain = maxElev - minElev;
+      document.getElementById("profileStats").textContent =
+        (totalDist / 1000).toFixed(1) + " km | " +
+        minElev.toFixed(0) + " – " + maxElev.toFixed(0) + " m | " +
+        gain.toFixed(0) + " m gain";
+    }
 
     // Update provider list whenever layers change
     function updateProviderList() {
